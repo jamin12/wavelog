@@ -1,3 +1,4 @@
+import 'package:blog/utils/comm_colors.dart';
 import 'package:blog/screen/screen_about.dart';
 import 'package:blog/screen/screen_error.dart';
 import 'package:blog/screen/screen_main.dart';
@@ -9,7 +10,13 @@ class MyBlog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'K Duo BLOG',
       initialRoute: '/',
+      theme: ThemeData(
+        backgroundColor: backgroundColor,
+        primaryColor: primaryColor,
+        accentColor: accentColor,
+      ),
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == '/') {
           // 메인 페이지
