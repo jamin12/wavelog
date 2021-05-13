@@ -1,33 +1,17 @@
 import 'dart:html';
-
-import 'package:blog/widget/web/web_builder.dart';
+import 'package:blog/screen/wrapper/react_widget_wrapper.dart';
+import 'package:blog/widget/widget_drawer.dart';
 import 'package:flutter/material.dart';
 
 class ScreenMain extends StatelessWidget {
-  bool _isWeb = identical(0, 0.0);
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: WebBuilder(
-        bodyWidget: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(
-              height: 50,
-            ),
-            Text(
-              'Double K BLOG',
-              style: Theme.of(context).textTheme.headline1,
-            ),
-            ListView(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: false,
-            )
-          ],
+  Widget build(BuildContext context) => _buildContent(context);
+
+  Widget _buildContent(BuildContext context) {
+    return ReactWidgetWrapper(
+        bodyMain: Container(
+          color: Colors.red,
         ),
-      ),
-    );
+        bodyDrawer: WidgetDrawer());
   }
 }

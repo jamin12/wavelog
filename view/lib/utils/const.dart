@@ -1,0 +1,1 @@
+enum DISPLAY { WEB, TABLET, MOBILE }
