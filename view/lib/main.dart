@@ -1,49 +1,13 @@
-import 'package:blog/utils/comm_colors.dart';
-import 'package:blog/screen/screen_about.dart';
-import 'package:blog/screen/screen_error.dart';
-import 'package:blog/screen/screen_main.dart';
+import 'package:blog/screen/main_page.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyBlog());
+void main() => runApp(Blog());
 
-class MyBlog extends StatelessWidget {
+class Blog extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'K Duo BLOG',
-      initialRoute: '/',
-      theme: ThemeData(
-        backgroundColor: backgroundColor,
-        primaryColor: primaryColor,
-        accentColor: accentColor,
-      ),
-      onGenerateRoute: (RouteSettings settings) {
-        if (settings.name == '/') {
-          // 메인 페이지
-          return MaterialPageRoute(
-            settings: RouteSettings(name: '/'),
-            maintainState: false,
-            builder: (context) => ScreenMain(),
-          );
-        } else {
-          Uri uri = Uri.parse(settings.name!);
-          print(uri.pathSegments.first.toString());
-          if (uri.pathSegments.first == 'about') {
-            // 개발자 정보 페이지
-            return MaterialPageRoute(
-              maintainState: false,
-              settings: RouteSettings(name: '/about'),
-              builder: (context) => ScreenAbout(),
-            );
-          }
-        }
-        // 사용자가 의도치 않은 페이지를 이동했을 경우 Error 페이지로 이동
-        return MaterialPageRoute(
-          maintainState: false,
-          settings: RouteSettings(name: '/error'),
-          builder: (context) => ScreenError(),
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'Blog',
+        theme: ThemeData(primarySwatch: Colors.lightBlue),
+        home: MainPage(),
+      );
 }
