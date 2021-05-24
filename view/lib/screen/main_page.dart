@@ -16,7 +16,7 @@ class _MainPageState extends State<MainPage>
     super.initState();
     _waveController = AnimationController(
         vsync: this, duration: Duration(seconds: 2), value: 0);
-    _animation = Tween<double>(begin: -100, end: 0).animate(_waveController)
+    _animation = Tween<double>(begin: -150, end: 0).animate(_waveController)
       ..addListener(() {
         setState(() {});
       });
@@ -39,49 +39,76 @@ class _MainPageState extends State<MainPage>
       body: Container(
         color: COLOR_BEACH,
         child: Stack(
-          alignment: Alignment.center,
-          children: List.generate(
-            waveCount,
-            (index) {
-              if (index == 0)
-                return Positioned(
-                  top: _animation.value,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    height: size.height / 5 * 3,
-                    color: COLOR_WAVE,
-                  ),
-                );
-
-              final int realIndex = index - 1;
-
-              if (index % 2 == 0)
-                return Positioned(
-                  top: _animation.value + size.height / 5 * 3 - waveSize / 2,
-                  left: realIndex * waveSize,
-                  child: Container(
-                    width: waveSize,
-                    height: waveSize,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: COLOR_WAVE),
-                  ),
-                );
-              else {
-                return Positioned(
-                  top: _animation.value + size.height / 5 * 3 - waveSize / 2,
-                  left: realIndex * waveSize,
-                  child: Container(
-                    width: waveSize,
-                    height: waveSize,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle, color: COLOR_BEACH),
-                  ),
-                );
-              }
-            },
-          ),
+          children: [
+            _buildWave(waveCount, size, waveSize),
+            Positioned(
+              top: size.height / 10,
+              left: 0,
+              right: 0,
+              child: CircleAvatar(
+                backgroundColor: COLOR_BEACH,
+                radius: 100,
+              ),
+            ),
+            Positioned(
+              bottom: size.height / 10,
+              left: 0,
+              right: 0,
+              child: CircleAvatar(
+                backgroundColor: COLOR_WAVE,
+                radius: 100,
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Stack _buildWave(int waveCount, Size size, double waveSize) {
+    final double waveHeight = size.height / 7 * 4;
+    return Stack(
+      alignment: Alignment.center,
+      children: List.generate(
+        waveCount,
+        (index) {
+          if (index == 0)
+            return Positioned(
+              top: _animation.value,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: waveHeight,
+                color: COLOR_WAVE,
+              ),
+            );
+
+          final int realIndex = index - 1;
+
+          if (index % 2 == 0)
+            return Positioned(
+              top: _animation.value + waveHeight - waveSize / 2,
+              left: realIndex * waveSize,
+              child: Container(
+                width: waveSize,
+                height: waveSize,
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: COLOR_WAVE),
+              ),
+            );
+          else {
+            return Positioned(
+              top: _animation.value + waveHeight - waveSize / 2,
+              left: realIndex * waveSize,
+              child: Container(
+                width: waveSize,
+                height: waveSize,
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: COLOR_BEACH),
+              ),
+            );
+          }
+        },
       ),
     );
   }
