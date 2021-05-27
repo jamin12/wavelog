@@ -1,4 +1,4 @@
-import 'package:blog/screen/main_page.dart';
+import 'package:blog/screen/splash_page.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(Blog());
@@ -8,6 +8,6 @@ class Blog extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'Blog',
         theme: ThemeData(primarySwatch: Colors.lightBlue),
-        home: MainPage(),
+        home: SplashPage(),
       );
 }
