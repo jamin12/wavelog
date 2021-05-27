@@ -11,20 +11,13 @@ class MainPage extends StatefulWidget {
 enum ANIMATION_TYPE { WAVE, BEACH, SEA, NONE }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
-  // 기본 파도 Animation Controller
-  late AnimationController _waveController;
-  // 해변 이동 Animation Controller
-  late AnimationController _beachChangeController;
-  // 바다 이동 Animation Controller
-  late AnimationController _seaChangeController;
-  // 기본 파도 Animation
-  late Animation<double> _animation;
-  // 해변 이동 Animation
-  late Animation<double> _beachChangeAnimation;
-  // 바다 이동 Animation
-  late Animation<double> _seaChangeAnimation;
   // 에니메이션 타입
   late ANIMATION_TYPE _animationType;
+
+  // 애니메이션 컨트롤러
+  late Map<ANIMATION_TYPE, AnimationController> _controllers;
+  // 애니메이션
+  late Map<ANIMATION_TYPE, Animation<double>?> _animations;
 
   @override
   void initState() {
@@ -32,27 +25,41 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     // 애니메이션 타입 초기화
     _animationType = ANIMATION_TYPE.WAVE;
+
+    // 애니메이션 컨트롤러 초기화
+    _controllers = {
+      ANIMATION_TYPE.WAVE: AnimationController(
+          vsync: this, duration: Duration(seconds: 2), value: 0),
+      ANIMATION_TYPE.BEACH: AnimationController(
+          vsync: this, duration: Duration(milliseconds: 500), value: 0),
+      ANIMATION_TYPE.SEA: AnimationController(
+          vsync: this, duration: Duration(milliseconds: 500), value: 0),
+    };
+
     // 애니메이션 초기화
-    _waveController = AnimationController(
-        vsync: this, duration: Duration(seconds: 2), value: 0);
-    _animation = Tween<double>(begin: -100, end: 0).animate(_waveController)
-      ..addListener(() {
-        setState(() {});
-      });
+    _animations = {
+      ANIMATION_TYPE.WAVE: Tween<double>(begin: -100, end: 0)
+          .animate(_controllers[ANIMATION_TYPE.WAVE]!)
+            ..addListener(() {
+              setState(() {});
+            }),
+      ANIMATION_TYPE.BEACH: null,
+      ANIMATION_TYPE.SEA: null,
+    };
 
-    _beachChangeController = AnimationController(
+    _controllers[ANIMATION_TYPE.BEACH] = AnimationController(
         vsync: this, duration: Duration(milliseconds: 500), value: 0);
-    _seaChangeController = AnimationController(
+    _controllers[ANIMATION_TYPE.SEA] = AnimationController(
         vsync: this, duration: Duration(milliseconds: 500), value: 0);
 
-    _waveController.repeat(reverse: true);
+    _controllers[ANIMATION_TYPE.WAVE]!.repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _waveController.dispose();
-    _beachChangeController.dispose();
-    _seaChangeController.dispose();
+    _controllers.forEach((key, value) {
+      value.dispose();
+    });
     super.dispose();
   }
 
@@ -60,35 +67,37 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     int waveCount = 30;
-    _seaChangeAnimation =
-        Tween<double>(begin: _animation.value, end: size.height / 2)
-            .animate(_seaChangeController)
-              ..addListener(() {
-                if (_seaChangeController.isAnimating)
-                  setState(() {});
-                else if (_seaChangeController.isCompleted &&
-                    _animationType != ANIMATION_TYPE.NONE) {
-                  _animationType = ANIMATION_TYPE.NONE;
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (_) => DetailMainPage(
-                            pageType: DETAIL_PAGE_TYPE.BEACH,
-                          )));
-                }
-              });
-    _beachChangeAnimation =
-        Tween<double>(begin: _animation.value, end: -size.height / 7 * 5)
-            .animate(_beachChangeController)
-              ..addListener(() {
-                if (_beachChangeController.isAnimating)
-                  setState(() {});
-                else if (_beachChangeController.isCompleted &&
-                    _animationType != ANIMATION_TYPE.NONE) {
-                  _animationType = ANIMATION_TYPE.NONE;
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (_) =>
-                          DetailMainPage(pageType: DETAIL_PAGE_TYPE.SEA)));
-                }
-              });
+    _animations[ANIMATION_TYPE.SEA] = Tween<double>(
+            begin: _animations[ANIMATION_TYPE.WAVE]!.value,
+            end: size.height / 2)
+        .animate(_controllers[ANIMATION_TYPE.SEA]!)
+          ..addListener(() {
+            if (_controllers[ANIMATION_TYPE.SEA]!.isAnimating)
+              setState(() {});
+            else if (_controllers[ANIMATION_TYPE.SEA]!.isCompleted &&
+                _animationType != ANIMATION_TYPE.NONE) {
+              _animationType = ANIMATION_TYPE.NONE;
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (_) => DetailMainPage(
+                        pageType: DETAIL_PAGE_TYPE.BEACH,
+                      )));
+            }
+          });
+    _animations[ANIMATION_TYPE.BEACH] = Tween<double>(
+            begin: _animations[ANIMATION_TYPE.WAVE]!.value,
+            end: -size.height / 7 * 5)
+        .animate(_controllers[ANIMATION_TYPE.BEACH]!)
+          ..addListener(() {
+            if (_controllers[ANIMATION_TYPE.BEACH]!.isAnimating)
+              setState(() {});
+            else if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
+                _animationType != ANIMATION_TYPE.NONE) {
+              _animationType = ANIMATION_TYPE.NONE;
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (_) =>
+                      DetailMainPage(pageType: DETAIL_PAGE_TYPE.SEA)));
+            }
+          });
 
     final double waveSize = size.width / (waveCount);
 
@@ -107,13 +116,20 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   setState(() {
                     _animationType = ANIMATION_TYPE.SEA;
 
-                    if (_waveController.isAnimating) _waveController.stop();
-                    _seaChangeController.forward();
+                    if (_controllers[ANIMATION_TYPE.WAVE]!.isAnimating)
+                      _controllers[ANIMATION_TYPE.WAVE]!.stop();
+                    _controllers[ANIMATION_TYPE.SEA]!.forward();
                   });
                 },
                 child: CircleAvatar(
                   backgroundColor: COLOR_BEACH,
                   radius: 100,
+                  child: Center(
+                    child: Text(
+                      'Kang Kyung Min',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -125,13 +141,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 onTap: () {
                   setState(() {
                     _animationType = ANIMATION_TYPE.BEACH;
-                    if (_waveController.isAnimating) _waveController.stop();
-                    _beachChangeController.forward();
+                    if (_controllers[ANIMATION_TYPE.WAVE]!.isAnimating)
+                      _controllers[ANIMATION_TYPE.WAVE]!.stop();
+                    _controllers[ANIMATION_TYPE.BEACH]!.forward();
                   });
                 },
                 child: CircleAvatar(
                   backgroundColor: COLOR_SEA,
                   radius: 100,
+                  child: Center(
+                    child: Text('Kwon Tae Woong',
+                        style: Theme.of(context).textTheme.bodyText1),
+                  ),
                 ),
               ),
             ),
@@ -154,13 +175,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
           switch (_animationType) {
             case ANIMATION_TYPE.WAVE: // 물결
-              wavePosition = _animation.value;
+              wavePosition = _animations[ANIMATION_TYPE.WAVE]!.value;
               break;
             case ANIMATION_TYPE.SEA: // 바다
-              wavePosition = _seaChangeAnimation.value;
+              wavePosition = (_animations[ANIMATION_TYPE.SEA] != null)
+                  ? _animations[ANIMATION_TYPE.SEA]!.value
+                  : 0;
               break;
             case ANIMATION_TYPE.BEACH: // 해변
-              wavePosition = _beachChangeAnimation.value;
+              wavePosition = (_animations[ANIMATION_TYPE.BEACH] != null)
+                  ? _animations[ANIMATION_TYPE.BEACH]!.value
+                  : 0;
               break;
             default: // 올 일 없음
               wavePosition = 0;

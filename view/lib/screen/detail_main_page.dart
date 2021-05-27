@@ -16,21 +16,21 @@ enum ANIMATION_TYPE { START, WAVE, CHAGE }
 
 class _DetailMainPageState extends State<DetailMainPage>
     with TickerProviderStateMixin {
+  // 기본 색상 지정
   late final Color _bgColor;
   late final Color _waveColor;
 
-  late AnimationController _startingController;
-
-  late AnimationController _waveController;
-  late Animation _waveAnimation;
-  late Animation _startingAniamtion;
+  // 애니메이션 컨트롤러
+  late Map<ANIMATION_TYPE, AnimationController> _controllers;
+  // 애니메이션
+  late Map<ANIMATION_TYPE, Animation<double>?> _animations;
 
   late ANIMATION_TYPE _animationType;
 
   @override
   void initState() {
     super.initState();
-    //
+    // View Type에 따라 색 지정
     switch (widget.pageType) {
       case DETAIL_PAGE_TYPE.BEACH:
         _bgColor = COLOR_BEACH;
@@ -40,40 +40,46 @@ class _DetailMainPageState extends State<DetailMainPage>
         _bgColor = COLOR_SEA;
         _waveColor = COLOR_BEACH;
         break;
-      default:
+      default: // 올 일 없음
         _bgColor = Colors.white;
         _waveColor = Colors.black;
     }
-
+    // 애니메이션 초기 설정 (시작 애니메이션)
     _animationType = ANIMATION_TYPE.START;
 
-    _waveController = AnimationController(
-        vsync: this, duration: Duration(seconds: 2), value: 0);
-    _waveAnimation = Tween<double>(begin: 0, end: -20).animate(_waveController)
-      ..addListener(() {
-        setState(() {});
-      });
+    _controllers = {
+      ANIMATION_TYPE.WAVE: AnimationController(
+          vsync: this, duration: Duration(seconds: 2), value: 0),
+      ANIMATION_TYPE.START: AnimationController(
+          vsync: this, duration: Duration(seconds: 2), value: 0),
+    };
 
-    _startingController = AnimationController(
-        vsync: this, duration: Duration(seconds: 2), value: 0);
-    _startingAniamtion =
-        Tween<double>(begin: -100, end: 0).animate(_startingController)
-          ..addListener(() {
-            setState(() {});
-            if (_startingController.isCompleted &&
-                _animationType == ANIMATION_TYPE.START) {
-              _animationType = ANIMATION_TYPE.WAVE;
-              _waveController.repeat(reverse: true);
-            }
-          });
+    _animations = {
+      ANIMATION_TYPE.WAVE: Tween<double>(begin: 0, end: -20)
+          .animate(_controllers[ANIMATION_TYPE.WAVE]!)
+            ..addListener(() {
+              setState(() {});
+            }),
+      ANIMATION_TYPE.START: Tween<double>(begin: -100, end: 0)
+          .animate(_controllers[ANIMATION_TYPE.START]!)
+            ..addListener(() {
+              setState(() {});
+              if (_controllers[ANIMATION_TYPE.START]!.isCompleted &&
+                  _animationType == ANIMATION_TYPE.START) {
+                _animationType = ANIMATION_TYPE.WAVE;
+                _controllers[ANIMATION_TYPE.WAVE]!.repeat(reverse: true);
+              }
+            }),
+    };
 
-    _startingController.forward();
+    _controllers[ANIMATION_TYPE.START]!.forward();
   }
 
   @override
   void dispose() {
-    _startingController.dispose();
-    _waveController.dispose();
+    _controllers.forEach((key, value) {
+      value.dispose();
+    });
     super.dispose();
   }
 
@@ -88,10 +94,14 @@ class _DetailMainPageState extends State<DetailMainPage>
     late double animationValue;
     switch (_animationType) {
       case ANIMATION_TYPE.START:
-        animationValue = _startingAniamtion.value;
+        animationValue = _animations[ANIMATION_TYPE.START] != null
+            ? _animations[ANIMATION_TYPE.START]!.value
+            : 0;
         break;
       case ANIMATION_TYPE.WAVE:
-        animationValue = _waveAnimation.value;
+        animationValue = _animations[ANIMATION_TYPE.WAVE] != null
+            ? _animations[ANIMATION_TYPE.WAVE]!.value
+            : 0;
         break;
       default:
         animationValue = 0;
