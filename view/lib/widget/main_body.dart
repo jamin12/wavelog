@@ -31,23 +31,31 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     bodyHeight = widget.bodySize.height;
+    initAnimation();
+  }
+
+  initAnimation({ANIMATION_TYPE initialType = ANIMATION_TYPE.START}) {
     // 애니메이션 초기 설정 (시작 애니메이션)
-    _animationType = ANIMATION_TYPE.START;
+    _animationType = initialType;
 
     _controllers = {
       ANIMATION_TYPE.START: AnimationController(
           vsync: this, duration: Duration(seconds: 1), value: 0),
+      ANIMATION_TYPE.CHANGE: AnimationController(
+          vsync: this, duration: Duration(milliseconds: 500), value: 0),
     };
 
     _animations = {
       ANIMATION_TYPE.START: Tween<double>(
               begin: (widget.pageType == MAIN_PAGE_TYPE.SEA)
                   ? -bodyHeight * 0.3
-                  : -bodyHeight * 1.7,
+                  : -bodyHeight * 1.6,
               end: (widget.pageType == MAIN_PAGE_TYPE.SEA)
                   ? -bodyHeight * 0.6
                   : -bodyHeight * 1.35)
-          .animate(_controllers[ANIMATION_TYPE.START]!)
+          .animate(CurvedAnimation(
+              parent: _controllers[ANIMATION_TYPE.START]!,
+              curve: Curves.decelerate))
             ..addListener(() {
               setState(() {
                 if (_controllers[ANIMATION_TYPE.START]!.isCompleted &&
@@ -56,8 +64,31 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
                 }
               });
             }),
+      ANIMATION_TYPE.CHANGE: Tween<double>(
+              begin: (widget.pageType != MAIN_PAGE_TYPE.SEA)
+                  ? -bodyHeight * 0.6
+                  : -bodyHeight * 1.35,
+              end: (widget.pageType != MAIN_PAGE_TYPE.SEA)
+                  ? -bodyHeight * 1.6
+                  : -bodyHeight * 0.3)
+          .animate(_controllers[ANIMATION_TYPE.CHANGE]!)
+            ..addListener(() {
+              setState(() {});
+              if (_controllers[ANIMATION_TYPE.CHANGE]!.isCompleted &&
+                  _animationType == ANIMATION_TYPE.CHANGE) {
+                _animationType = ANIMATION_TYPE.START;
+                _controllers[ANIMATION_TYPE.START]!.forward();
+              }
+            }),
     };
-    _controllers[ANIMATION_TYPE.START]!.forward();
+    _controllers[_animationType]!.forward();
+  }
+
+  @override
+  void didUpdateWidget(covariant MainBody oldWidget) {
+    // 화면 전환 애니메이션 호출
+    initAnimation(initialType: ANIMATION_TYPE.CHANGE);
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -77,6 +108,8 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
 
     if (_animationType == ANIMATION_TYPE.START)
       animationValue = _animations[ANIMATION_TYPE.START]!.value;
+    else if (_animationType == ANIMATION_TYPE.CHANGE)
+      animationValue = _animations[ANIMATION_TYPE.CHANGE]!.value;
 
     _list.add(
       Positioned(
@@ -130,9 +163,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
           child: RotatedBox(
             quarterTurns: (widget.pageType == MAIN_PAGE_TYPE.BEACH) ? 2 : 0,
             child: WaveAnimation(
-              waveColor: widget.pageType == MAIN_PAGE_TYPE.SEA
-                  ? _waveColor.withOpacity(0.4)
-                  : _waveColor,
+              waveColor: _waveColor.withOpacity(0.4),
               waveSpeed: 3,
             ),
           ),
@@ -145,17 +176,6 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // switch (_animationType) {
-    //   case ANIMATION_TYPE.START:
-    //     // animationValue = _animations[ANIMATION_TYPE.START] != null
-    //     //     ? _animations[ANIMATION_TYPE.START]!.value
-    //     //     : 0;
-    //     break;
-
-    //   default:
-    //     animationValue = 0;
-    // }
-
     return Container(
       width: widget.bodySize.width,
       color: _bgColor,
