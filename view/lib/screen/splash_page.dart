@@ -1,5 +1,6 @@
 import 'package:blog/const.dart';
 import 'package:blog/screen/main_page.dart';
+import 'package:blog/widget/wave_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -9,7 +10,7 @@ class SplashPage extends StatefulWidget {
 }
 
 // 파도, 해변, 바다, 없음
-enum ANIMATION_TYPE { WAVE, BEACH, SEA, NONE }
+enum ANIMATION_TYPE { START, BEACH, SEA, NONE, CIRCLE_AVARTA }
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   // 에니메이션 타입
@@ -25,35 +26,25 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     super.initState();
 
     // 애니메이션 타입 초기화
-    _animationType = ANIMATION_TYPE.WAVE;
+    _animationType = ANIMATION_TYPE.START;
 
     // 애니메이션 컨트롤러 초기화
     _controllers = {
-      ANIMATION_TYPE.WAVE: AnimationController(
-          vsync: this, duration: Duration(seconds: 2), value: 0),
       ANIMATION_TYPE.BEACH: AnimationController(
           vsync: this, duration: Duration(milliseconds: 500), value: 0),
       ANIMATION_TYPE.SEA: AnimationController(
           vsync: this, duration: Duration(milliseconds: 500), value: 0),
+      ANIMATION_TYPE.CIRCLE_AVARTA: AnimationController(
+          vsync: this, duration: Duration(milliseconds: 300), value: 0),
     };
 
     // 애니메이션 초기화
     _animations = {
-      ANIMATION_TYPE.WAVE: Tween<double>(begin: -100, end: 0)
-          .animate(_controllers[ANIMATION_TYPE.WAVE]!)
-            ..addListener(() {
-              setState(() {});
-            }),
+      ANIMATION_TYPE.CIRCLE_AVARTA: Tween<double>(begin: 1, end: 0)
+          .animate(_controllers[ANIMATION_TYPE.CIRCLE_AVARTA]!),
       ANIMATION_TYPE.BEACH: null,
       ANIMATION_TYPE.SEA: null,
     };
-
-    _controllers[ANIMATION_TYPE.BEACH] = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500), value: 0);
-    _controllers[ANIMATION_TYPE.SEA] = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500), value: 0);
-
-    _controllers[ANIMATION_TYPE.WAVE]!.repeat(reverse: true);
   }
 
   @override
@@ -66,11 +57,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    int waveCount = 30;
-    _animations[ANIMATION_TYPE.SEA] = Tween<double>(
-            begin: _animations[ANIMATION_TYPE.WAVE]!.value,
-            end: -size.height / 7 * 5)
+    final Size size = MediaQuery.of(context).size;
+
+    _animations[ANIMATION_TYPE.SEA] = Tween<double>(begin: -size.height, end: 0)
         .animate(_controllers[ANIMATION_TYPE.SEA]!)
           ..addListener(() {
             if (_controllers[ANIMATION_TYPE.SEA]!.isAnimating)
@@ -85,9 +74,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       )));
             }
           });
+
     _animations[ANIMATION_TYPE.BEACH] = Tween<double>(
-            begin: _animations[ANIMATION_TYPE.WAVE]!.value,
-            end: size.height / 2)
+            begin: -size.height, end: -size.height * 2)
         .animate(_controllers[ANIMATION_TYPE.BEACH]!)
           ..addListener(() {
             if (_controllers[ANIMATION_TYPE.BEACH]!.isAnimating)
@@ -101,14 +90,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             }
           });
 
-    final double waveSize = size.width / (waveCount);
-
     return Scaffold(
       body: Container(
-          color: COLOR_SEA,
+          color: COLOR_BEACH,
           child: Stack(
             children: [
-              _buildWave(waveCount, size, waveSize),
+              _buildWave(size.height),
               Positioned(
                 top: size.height / 10,
                 left: 0,
@@ -117,33 +104,36 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   onTap: () {
                     setState(() {
                       _animationType = ANIMATION_TYPE.BEACH;
-
-                      if (_controllers[ANIMATION_TYPE.WAVE]!.isAnimating)
-                        _controllers[ANIMATION_TYPE.WAVE]!.stop();
                       _controllers[ANIMATION_TYPE.BEACH]!.forward();
+                      _controllers[ANIMATION_TYPE.CIRCLE_AVARTA]!.forward();
                     });
                   },
-                  child: CircleAvatar(
-                    backgroundColor: COLOR_DRAWABLE,
-                    radius: 100,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/umbrella.svg',
-                            width: 100,
-                            height: 100,
-                            color: COLOR_BEACH,
-                          ),
-                          Text(
-                            'Kang Kyung Min',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(color: COLOR_BEACH),
-                          ),
-                        ],
+                  child: Opacity(
+                    opacity: _animationType == ANIMATION_TYPE.SEA
+                        ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
+                        : 1,
+                    child: CircleAvatar(
+                      backgroundColor: COLOR_DRAWABLE,
+                      radius: 100,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/umbrella.svg',
+                              width: 100,
+                              height: 100,
+                              color: COLOR_BEACH,
+                            ),
+                            Text(
+                              'Kang Kyung Min',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(color: COLOR_BEACH),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -157,30 +147,34 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   onTap: () {
                     setState(() {
                       _animationType = ANIMATION_TYPE.SEA;
-                      if (_controllers[ANIMATION_TYPE.WAVE]!.isAnimating)
-                        _controllers[ANIMATION_TYPE.WAVE]!.stop();
                       _controllers[ANIMATION_TYPE.SEA]!.forward();
+                      _controllers[ANIMATION_TYPE.CIRCLE_AVARTA]!.forward();
                     });
                   },
-                  child: CircleAvatar(
-                    backgroundColor: COLOR_DRAWABLE,
-                    radius: 100,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SvgPicture.asset(
-                            'assets/fish.svg',
-                            width: 100,
-                            height: 100,
-                            color: COLOR_BEACH,
-                          ),
-                          Text('Kwon Tae Woong',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(color: COLOR_BEACH)),
-                        ],
+                  child: Opacity(
+                    opacity: _animationType == ANIMATION_TYPE.BEACH
+                        ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
+                        : 1,
+                    child: CircleAvatar(
+                      backgroundColor: COLOR_DRAWABLE,
+                      radius: 100,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/fish.svg',
+                              width: 100,
+                              height: 100,
+                              color: COLOR_BEACH,
+                            ),
+                            Text('Kwon Tae Woong',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(color: COLOR_BEACH)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -192,74 +186,57 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   }
 
   /// 일렁이는 파도 및 이동 애니메이션 빌드
-  Stack _buildWave(int waveCount, Size size, double waveSize) {
-    final double waveHeight = size.height / 7 * 4;
-    final double waveWidth = waveSize * 1.5;
+  Stack _buildWave(double displayHegiht) {
+    late double _animPosition;
+
+    switch (_animationType) {
+      case ANIMATION_TYPE.SEA:
+        _animPosition = _animations[ANIMATION_TYPE.SEA]!.value;
+        break;
+      case ANIMATION_TYPE.BEACH:
+        _animPosition = _animations[ANIMATION_TYPE.BEACH]!.value;
+        break;
+      default:
+        _animPosition = -(displayHegiht);
+    }
+
     return Stack(
       alignment: Alignment.center,
-      children: List.generate(
-        waveCount,
-        (index) {
-          double wavePosition = 0;
-
-          switch (_animationType) {
-            case ANIMATION_TYPE.WAVE: // 물결
-              wavePosition = _animations[ANIMATION_TYPE.WAVE]!.value;
-              break;
-            case ANIMATION_TYPE.SEA: // 바다
-              wavePosition = (_animations[ANIMATION_TYPE.SEA] != null)
-                  ? _animations[ANIMATION_TYPE.SEA]!.value
-                  : 0;
-              break;
-            case ANIMATION_TYPE.BEACH: // 해변
-              wavePosition = (_animations[ANIMATION_TYPE.BEACH] != null)
-                  ? _animations[ANIMATION_TYPE.BEACH]!.value
-                  : 0;
-              break;
-            default: // 올 일 없음
-              wavePosition = 0;
-          }
-
-          if (index == 0) // 처음 해변
-            return Positioned(
-              top: wavePosition - waveHeight,
-              left: 0,
-              right: 0,
-              child: Container(
-                height: waveHeight * 2,
-                color: COLOR_BEACH,
+      children: [
+        Positioned(
+            left: 0,
+            right: 0,
+            bottom: _animPosition,
+            child: Container(
+              height: displayHegiht * 1.5,
+              child: WaveAnimation(
+                waveColor: COLOR_SEA.withBlue(255).withOpacity(0.4),
+                waveSpeed: 5,
               ),
-            );
-
-          final int realIndex = index - 1;
-
-          if (index % 2 == 0) {
-            return Positioned(
-              top: wavePosition + waveHeight - waveSize / 2 - 3,
-              left: realIndex * waveWidth,
-              child: ClipOval(
-                child: Container(
-                  width: waveWidth,
-                  height: waveSize,
-                  color: COLOR_BEACH,
-                ),
+            )),
+        Positioned(
+            left: 0,
+            right: 0,
+            bottom: _animPosition,
+            child: Container(
+              height: displayHegiht * 1.5,
+              child: WaveAnimation(
+                waveColor: COLOR_SEA.withBlue(200).withOpacity(0.4),
+                waveSpeed: 4,
               ),
-            );
-          } else {
-            return Positioned(
-              top: wavePosition + waveHeight - waveSize / 2 + 3,
-              left: realIndex * waveWidth,
-              child: ClipOval(
-                child: Container(
-                  width: waveWidth,
-                  height: waveSize,
-                  color: COLOR_SEA,
-                ),
+            )),
+        Positioned(
+            left: 0,
+            right: 0,
+            bottom: _animPosition,
+            child: Container(
+              height: displayHegiht * 1.5,
+              child: WaveAnimation(
+                waveColor: COLOR_SEA.withOpacity(0.4),
+                waveSpeed: 3,
               ),
-            );
-          }
-        },
-      ),
+            )),
+      ],
     );
   }
 }

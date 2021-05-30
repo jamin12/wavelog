@@ -6,7 +6,7 @@ void main() => runApp(Blog());
 class Blog extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Blog',
+        title: 'Wavelog',
         theme: ThemeData(primarySwatch: Colors.lightBlue),
         home: SplashPage(),
       );
