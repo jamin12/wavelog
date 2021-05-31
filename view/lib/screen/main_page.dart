@@ -6,7 +6,7 @@ enum ANIMATION_TYPE { START, CHANGE, NONE }
 enum MAIN_PAGE_TYPE { BEACH, SEA }
 
 class MainPage extends StatefulWidget {
-  MAIN_PAGE_TYPE pageType;
+  final MAIN_PAGE_TYPE pageType;
 
   MainPage({required this.pageType});
 
@@ -15,12 +15,26 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  late MAIN_PAGE_TYPE _currentPageType;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPageType = widget.pageType;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
     double sideMenuSize = size.width / 8;
     sideMenuSize = sideMenuSize > 400 ? 400 : sideMenuSize;
+
+    MainBody mainPage = MainBody(
+      bodySize: Size(size.width - sideMenuSize, size.height),
+      pageType: widget.pageType,
+    );
+
     return Scaffold(
       body: Container(
           child: Row(
@@ -31,16 +45,15 @@ class _MainPageState extends State<MainPage> {
             color: COLOR_DRAWABLE,
             child: ElevatedButton(
               child: Text('CHANGE!'),
-              onPressed: () => setState(() =>
-                  (widget.pageType == MAIN_PAGE_TYPE.BEACH)
-                      ? widget.pageType = MAIN_PAGE_TYPE.SEA
-                      : widget.pageType = MAIN_PAGE_TYPE.BEACH),
+              onPressed: () {
+                (_currentPageType == MAIN_PAGE_TYPE.BEACH)
+                    ? _currentPageType = MAIN_PAGE_TYPE.SEA
+                    : _currentPageType = MAIN_PAGE_TYPE.BEACH;
+                mainPage.changePage(_currentPageType);
+              },
             ),
           ),
-          MainBody(
-            bodySize: Size(size.width - sideMenuSize, size.height),
-            pageType: widget.pageType,
-          ),
+          mainPage
         ],
       )),
     );
