@@ -126,7 +126,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                               color: COLOR_BEACH,
                             ),
                             Text(
-                              'Kang Kyung Min',
+                              BEACH_USER_NAME,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText1!
@@ -168,7 +168,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                               height: 100,
                               color: COLOR_BEACH,
                             ),
-                            Text('Kwon Tae Woong',
+                            Text(SEA_USER_NAME,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText1!
