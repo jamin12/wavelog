@@ -10,7 +10,14 @@ class SplashPage extends StatefulWidget {
 }
 
 // 파도, 해변, 바다, 없음
-enum ANIMATION_TYPE { START, BEACH, SEA, NONE, CIRCLE_AVARTA }
+enum ANIMATION_TYPE {
+  START,
+  BEACH,
+  SEA,
+  BEACH_COMPLETE,
+  SEA_COMPLETE,
+  CIRCLE_AVARTA
+}
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   // 에니메이션 타입
@@ -63,8 +70,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         .animate(_controllers[ANIMATION_TYPE.SEA]!)
           ..addListener(() {
             if (_controllers[ANIMATION_TYPE.SEA]!.isCompleted &&
-                _animationType != ANIMATION_TYPE.NONE) {
-              _animationType = ANIMATION_TYPE.NONE;
+                _animationType != ANIMATION_TYPE.SEA_COMPLETE) {
+              _animationType = ANIMATION_TYPE.SEA_COMPLETE;
               // 바다 이동
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (_) => MainPage(
@@ -78,8 +85,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         .animate(_controllers[ANIMATION_TYPE.BEACH]!)
           ..addListener(() {
             if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
-                _animationType != ANIMATION_TYPE.NONE) {
-              _animationType = ANIMATION_TYPE.NONE;
+                _animationType != ANIMATION_TYPE.BEACH_COMPLETE) {
+              _animationType = ANIMATION_TYPE.BEACH_COMPLETE;
               // 해변 이동
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (_) => MainPage(pageType: MAIN_PAGE_TYPE.BEACH)));
@@ -200,9 +207,11 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
         switch (_animationType) {
           case ANIMATION_TYPE.SEA:
+          case ANIMATION_TYPE.SEA_COMPLETE:
             _animPosition = _animations[ANIMATION_TYPE.SEA]!.value;
             break;
           case ANIMATION_TYPE.BEACH:
+          case ANIMATION_TYPE.BEACH_COMPLETE:
             _animPosition = _animations[ANIMATION_TYPE.BEACH]!.value;
             break;
           default:
