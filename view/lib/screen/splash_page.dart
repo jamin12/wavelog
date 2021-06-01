@@ -62,9 +62,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     _animations[ANIMATION_TYPE.SEA] = Tween<double>(begin: -size.height, end: 0)
         .animate(_controllers[ANIMATION_TYPE.SEA]!)
           ..addListener(() {
-            if (_controllers[ANIMATION_TYPE.SEA]!.isAnimating)
-              setState(() {});
-            else if (_controllers[ANIMATION_TYPE.SEA]!.isCompleted &&
+            if (_controllers[ANIMATION_TYPE.SEA]!.isCompleted &&
                 _animationType != ANIMATION_TYPE.NONE) {
               _animationType = ANIMATION_TYPE.NONE;
               // 바다 이동
@@ -79,9 +77,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             begin: -size.height, end: -size.height * 2)
         .animate(_controllers[ANIMATION_TYPE.BEACH]!)
           ..addListener(() {
-            if (_controllers[ANIMATION_TYPE.BEACH]!.isAnimating)
-              setState(() {});
-            else if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
+            if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
                 _animationType != ANIMATION_TYPE.NONE) {
               _animationType = ANIMATION_TYPE.NONE;
               // 해변 이동
@@ -108,31 +104,34 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       _controllers[ANIMATION_TYPE.CIRCLE_AVARTA]!.forward();
                     });
                   },
-                  child: Opacity(
-                    opacity: _animationType == ANIMATION_TYPE.SEA
-                        ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
-                        : 1,
-                    child: CircleAvatar(
-                      backgroundColor: COLOR_DRAWABLE,
-                      radius: 100,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/umbrella.svg',
-                              width: 100,
-                              height: 100,
-                              color: COLOR_BEACH,
-                            ),
-                            Text(
-                              BEACH_USER_NAME,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(color: COLOR_BEACH),
-                            ),
-                          ],
+                  child: AnimatedBuilder(
+                    animation: _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!,
+                    builder: (context, child) => Opacity(
+                      opacity: _animationType == ANIMATION_TYPE.SEA
+                          ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
+                          : 1,
+                      child: CircleAvatar(
+                        backgroundColor: COLOR_DRAWABLE,
+                        radius: 100,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/umbrella.svg',
+                                width: 100,
+                                height: 100,
+                                color: COLOR_BEACH,
+                              ),
+                              Text(
+                                BEACH_USER_NAME,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(color: COLOR_BEACH),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -151,32 +150,37 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       _controllers[ANIMATION_TYPE.CIRCLE_AVARTA]!.forward();
                     });
                   },
-                  child: Opacity(
-                    opacity: _animationType == ANIMATION_TYPE.BEACH
-                        ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
-                        : 1,
-                    child: CircleAvatar(
-                      backgroundColor: COLOR_DRAWABLE,
-                      radius: 100,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/fish.svg',
-                              width: 100,
-                              height: 100,
-                              color: COLOR_BEACH,
+                  child: AnimatedBuilder(
+                    animation: _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!,
+                    builder: (context, child) {
+                      return Opacity(
+                        opacity: _animationType == ANIMATION_TYPE.BEACH
+                            ? _animations[ANIMATION_TYPE.CIRCLE_AVARTA]!.value
+                            : 1,
+                        child: CircleAvatar(
+                          backgroundColor: COLOR_DRAWABLE,
+                          radius: 100,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/fish.svg',
+                                  width: 100,
+                                  height: 100,
+                                  color: COLOR_BEACH,
+                                ),
+                                Text(SEA_USER_NAME,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(color: COLOR_BEACH)),
+                              ],
                             ),
-                            Text(SEA_USER_NAME,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText1!
-                                    .copyWith(color: COLOR_BEACH)),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -186,57 +190,65 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   }
 
   /// 일렁이는 파도 및 이동 애니메이션 빌드
-  Stack _buildWave(double displayHegiht) {
-    late double _animPosition;
+  Widget _buildWave(double displayHegiht) {
+    return AnimatedBuilder(
+      animation: _animationType == ANIMATION_TYPE.SEA
+          ? _animations[ANIMATION_TYPE.SEA]!
+          : _animations[ANIMATION_TYPE.BEACH]!,
+      builder: (context, child) {
+        late double _animPosition;
 
-    switch (_animationType) {
-      case ANIMATION_TYPE.SEA:
-        _animPosition = _animations[ANIMATION_TYPE.SEA]!.value;
-        break;
-      case ANIMATION_TYPE.BEACH:
-        _animPosition = _animations[ANIMATION_TYPE.BEACH]!.value;
-        break;
-      default:
-        _animPosition = -(displayHegiht);
-    }
+        switch (_animationType) {
+          case ANIMATION_TYPE.SEA:
+            _animPosition = _animations[ANIMATION_TYPE.SEA]!.value;
+            break;
+          case ANIMATION_TYPE.BEACH:
+            _animPosition = _animations[ANIMATION_TYPE.BEACH]!.value;
+            break;
+          default:
+            _animPosition = -(displayHegiht);
+        }
 
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-            left: 0,
-            right: 0,
-            bottom: _animPosition,
-            child: Container(
-              height: displayHegiht * 1.5,
-              child: WaveAnimation(
-                waveColor: COLOR_SEA.withBlue(255).withOpacity(0.4),
-                waveSpeed: 5,
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+                left: 0,
+                right: 0,
+                bottom: _animPosition,
+                child: Container(
+                  height: displayHegiht * 1.5,
+                  child: WaveAnimation(
+                    waveColor: COLOR_SEA.withBlue(255).withOpacity(0.4),
+                    waveSpeed: 5,
+                  ),
+                )),
+            Positioned(
+                left: 0,
+                right: 0,
+                bottom: _animPosition,
+                child: Container(
+                  height: displayHegiht * 1.5,
+                  child: WaveAnimation(
+                    waveColor: COLOR_SEA.withBlue(200).withOpacity(0.4),
+                    waveSpeed: 4,
+                  ),
+                )),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: _animPosition,
+              child: Container(
+                height: displayHegiht * 1.5,
+                child: WaveAnimation(
+                  waveColor: COLOR_SEA.withOpacity(0.4),
+                  waveSpeed: 3,
+                ),
               ),
-            )),
-        Positioned(
-            left: 0,
-            right: 0,
-            bottom: _animPosition,
-            child: Container(
-              height: displayHegiht * 1.5,
-              child: WaveAnimation(
-                waveColor: COLOR_SEA.withBlue(200).withOpacity(0.4),
-                waveSpeed: 4,
-              ),
-            )),
-        Positioned(
-            left: 0,
-            right: 0,
-            bottom: _animPosition,
-            child: Container(
-              height: displayHegiht * 1.5,
-              child: WaveAnimation(
-                waveColor: COLOR_SEA.withOpacity(0.4),
-                waveSpeed: 3,
-              ),
-            )),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

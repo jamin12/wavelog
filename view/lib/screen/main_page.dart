@@ -47,25 +47,26 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: [
                 DrawerHeader(
+                  padding: EdgeInsets.all(0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       CircleAvatar(
-                        radius: size.width >= 500 ? 30 : 20,
+                        radius: 20,
                         backgroundColor: COLOR_BEACH,
                         child: SvgPicture.asset(
                           _currentPageType == MAIN_PAGE_TYPE.BEACH
                               ? 'assets/umbrella.svg'
                               : 'assets/fish.svg',
-                          width: size.width >= 500 ? 30 : 20,
-                          height: size.width >= 500 ? 30 : 20,
+                          width: 20,
+                          height: 20,
                           color: COLOR_DRAWABLE,
                         ),
                       ),
                       Visibility(
-                        visible: size.width >= 1600,
+                        visible: size.width >= 1700,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
@@ -116,7 +117,7 @@ class _MainPageState extends State<MainPage> {
                             ),
                           ),
                           Visibility(
-                            visible: size.width >= 1600,
+                            visible: size.width >= 1700,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(

@@ -21,6 +21,14 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
   // 기본 색상 지정
   late final Color _bgColor = COLOR_BEACH;
   late final Color _waveColor = COLOR_SEA;
+  final _categoryList = [
+    'ALL',
+    'Life',
+    'Study',
+    'Project',
+    'Information',
+    'Free'
+  ];
 
   // 애니메이션 컨트롤러
   late Map<ANIMATION_TYPE, AnimationController> _controllers;
@@ -68,12 +76,11 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
               parent: _controllers[ANIMATION_TYPE.START]!,
               curve: Curves.decelerate))
             ..addListener(() {
-              setState(() {
-                if (_controllers[ANIMATION_TYPE.START]!.isCompleted &&
-                    _animationType != ANIMATION_TYPE.NONE) {
-                  _animationType = ANIMATION_TYPE.NONE;
-                }
-              });
+              if (_controllers[ANIMATION_TYPE.START]!.isCompleted &&
+                  _animationType != ANIMATION_TYPE.NONE) {
+                _animationType = ANIMATION_TYPE.NONE;
+                setState(() {});
+              }
             }),
       ANIMATION_TYPE.CHANGE: Tween<double>(
               begin: (_currentPageType != MAIN_PAGE_TYPE.SEA)
@@ -84,11 +91,11 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
                   : -bodyHeight * 0.3)
           .animate(_controllers[ANIMATION_TYPE.CHANGE]!)
             ..addListener(() {
-              setState(() {});
               if (_controllers[ANIMATION_TYPE.CHANGE]!.isCompleted &&
                   _animationType == ANIMATION_TYPE.CHANGE) {
                 _animationType = ANIMATION_TYPE.START;
                 _controllers[ANIMATION_TYPE.START]!.forward();
+                setState(() {});
               }
             }),
     };
@@ -185,31 +192,6 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       ),
     );
 
-    // 여기서 카테고리 List 추가
-    _list.add(
-      SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            SizedBox(
-              height: bodyHeight * 0.2,
-            ),
-            GridView.builder(
-              itemCount: 50,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, childAspectRatio: 5 / 1),
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, index) => _buildCategoryItem(
-                iconColor: Colors.accents[index % Colors.accents.length],
-                title: 'Category $index',
-              ),
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-            ),
-          ],
-        ),
-      ),
-    );
     return _list;
   }
 
@@ -237,13 +219,21 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
             left: 0,
             top: 0,
             child: CircleAvatar(
-              radius: 20,
+              radius: widget.bodySize.width < 1000
+                  ? widget.bodySize.width / 25
+                  : widget.bodySize.width / 50,
               backgroundColor: iconColor,
               child: SvgPicture.asset(
-                'assets/fish.svg',
+                _currentPageType == MAIN_PAGE_TYPE.BEACH
+                    ? 'assets/umbrella.svg'
+                    : 'assets/fish.svg',
                 color: COLOR_BEACH,
-                width: 20,
-                height: 20,
+                width: widget.bodySize.width < 1000
+                    ? widget.bodySize.width / 25
+                    : widget.bodySize.width / 50,
+                height: widget.bodySize.width < 1000
+                    ? widget.bodySize.width / 25
+                    : widget.bodySize.width / 50,
               ),
             ),
           ),
@@ -253,7 +243,9 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
               style: TextStyle(
                 color: COLOR_DRAWABLE,
                 fontWeight: FontWeight.bold,
-                fontSize: 30,
+                fontSize: widget.bodySize.width < 1000
+                    ? widget.bodySize.width / 25
+                    : widget.bodySize.width / 50,
               ),
             ),
           ),
@@ -268,7 +260,39 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       width: widget.bodySize.width,
       height: bodyHeight,
       color: _bgColor,
-      child: Stack(children: buildWaveAnimation()),
+      child: Stack(children: [
+        AnimatedBuilder(
+          animation: _animationType == ANIMATION_TYPE.START
+              ? _animations[ANIMATION_TYPE.START]!
+              : _animations[ANIMATION_TYPE.CHANGE]!,
+          builder: (context, child) => Stack(
+            children: buildWaveAnimation(),
+          ),
+        ), // 여기서 카테고리 List 추가
+        SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              SizedBox(
+                height: bodyHeight * 0.2,
+              ),
+              GridView.builder(
+                itemCount: _categoryList.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: widget.bodySize.width < 1000 ? 1 : 2,
+                    childAspectRatio: 5 / 1), // Ratio = Width / Height
+                scrollDirection: Axis.vertical,
+                itemBuilder: (context, index) => _buildCategoryItem(
+                  iconColor: Colors.accents[index % Colors.accents.length],
+                  title: '${_categoryList[index]}',
+                ),
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+              ),
+            ],
+          ),
+        ),
+      ]),
     );
   }
 }

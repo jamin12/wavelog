@@ -31,9 +31,6 @@ class _WaveAnimationState extends State<WaveAnimation>
         ? CurvedAnimation(
             parent: _animationController, curve: Curves.easeInOutSine)
         : _animationController);
-    _animationController.addListener(() {
-      setState(() {});
-    });
     _animationController.repeat(reverse: widget.reverse);
   }
 
@@ -45,10 +42,13 @@ class _WaveAnimationState extends State<WaveAnimation>
 
   @override
   Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: WaveClipper(_animation.value),
-      child: Container(
-        color: widget.waveColor,
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) => ClipPath(
+        clipper: WaveClipper(_animation.value),
+        child: Container(
+          color: widget.waveColor,
+        ),
       ),
     );
   }
