@@ -3,6 +3,7 @@ import 'package:blog/screen/main_page.dart';
 import 'package:blog/widget/wave_animation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class MainBody extends StatefulWidget {
   final MAIN_PAGE_TYPE pageType;
@@ -184,13 +185,88 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       ),
     );
 
+    // 여기서 카테고리 List 추가
+    _list.add(
+      SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            SizedBox(
+              height: bodyHeight * 0.2,
+            ),
+            GridView.builder(
+              itemCount: 50,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, childAspectRatio: 5 / 1),
+              scrollDirection: Axis.vertical,
+              itemBuilder: (context, index) => _buildCategoryItem(
+                iconColor: Colors.accents[index % Colors.accents.length],
+                title: 'Category $index',
+              ),
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+            ),
+          ],
+        ),
+      ),
+    );
     return _list;
+  }
+
+  Container _buildCategoryItem(
+      {required Color iconColor, required String title}) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
+      height: 100,
+      decoration: BoxDecoration(
+        color: COLOR_BEACH,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: COLOR_DRAWABLE, width: 1),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: COLOR_BEACH,
+        //     offset: Offset(10, 10),
+        //     blurRadius: 30.0,
+        //   ),
+        // ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            child: CircleAvatar(
+              radius: 20,
+              backgroundColor: iconColor,
+              child: SvgPicture.asset(
+                'assets/fish.svg',
+                color: COLOR_BEACH,
+                width: 20,
+                height: 20,
+              ),
+            ),
+          ),
+          Center(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: COLOR_DRAWABLE,
+                fontWeight: FontWeight.bold,
+                fontSize: 30,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: widget.bodySize.width,
+      height: bodyHeight,
       color: _bgColor,
       child: Stack(children: buildWaveAnimation()),
     );
