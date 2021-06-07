@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 enum ANIMATION_TYPE { START, CHANGE, NONE }
-enum MAIN_PAGE_TYPE { BEACH, SEA }
+enum PAGE_TYPE { BEACH, SEA }
 
 class MainPage extends StatefulWidget {
-  final MAIN_PAGE_TYPE pageType;
+  final PAGE_TYPE pageType;
 
   MainPage({required this.pageType});
 
@@ -16,7 +16,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late MAIN_PAGE_TYPE _currentPageType;
+  late PAGE_TYPE _currentPageType;
   late MainBody _mainPage;
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _MainPageState extends State<MainPage> {
                         radius: 20,
                         backgroundColor: COLOR_BEACH,
                         child: SvgPicture.asset(
-                          _currentPageType == MAIN_PAGE_TYPE.BEACH
+                          _currentPageType == PAGE_TYPE.BEACH
                               ? 'assets/umbrella.svg'
                               : 'assets/fish.svg',
                           width: 20,
@@ -70,7 +70,7 @@ class _MainPageState extends State<MainPage> {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            _currentPageType == MAIN_PAGE_TYPE.BEACH
+                            _currentPageType == PAGE_TYPE.BEACH
                                 ? BEACH_USER_NAME
                                 : SEA_USER_NAME,
                             style: TextStyle(fontSize: 15, color: COLOR_BEACH),
@@ -108,7 +108,7 @@ class _MainPageState extends State<MainPage> {
                             radius: 20,
                             backgroundColor: COLOR_BEACH,
                             child: SvgPicture.asset(
-                              _currentPageType != MAIN_PAGE_TYPE.BEACH
+                              _currentPageType != PAGE_TYPE.BEACH
                                   ? 'assets/umbrella.svg'
                                   : 'assets/fish.svg',
                               width: 20,
@@ -121,7 +121,7 @@ class _MainPageState extends State<MainPage> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                _currentPageType != MAIN_PAGE_TYPE.BEACH
+                                _currentPageType != PAGE_TYPE.BEACH
                                     ? BEACH_USER_NAME
                                     : SEA_USER_NAME,
                                 style:
@@ -144,9 +144,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   void bodyChange() {
-    (_currentPageType == MAIN_PAGE_TYPE.BEACH)
-        ? _currentPageType = MAIN_PAGE_TYPE.SEA
-        : _currentPageType = MAIN_PAGE_TYPE.BEACH;
+    (_currentPageType == PAGE_TYPE.BEACH)
+        ? _currentPageType = PAGE_TYPE.SEA
+        : _currentPageType = PAGE_TYPE.BEACH;
 
     _mainPage.changePage(_currentPageType);
   }

@@ -75,23 +75,23 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               // 바다 이동
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (_) => MainPage(
-                        pageType: MAIN_PAGE_TYPE.SEA,
+                        pageType: PAGE_TYPE.SEA,
                       )));
             }
           });
 
-    _animations[ANIMATION_TYPE.BEACH] = Tween<double>(
-            begin: -size.height, end: -size.height * 2)
-        .animate(_controllers[ANIMATION_TYPE.BEACH]!)
-          ..addListener(() {
-            if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
-                _animationType != ANIMATION_TYPE.BEACH_COMPLETE) {
-              _animationType = ANIMATION_TYPE.BEACH_COMPLETE;
-              // 해변 이동
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (_) => MainPage(pageType: MAIN_PAGE_TYPE.BEACH)));
-            }
-          });
+    _animations[ANIMATION_TYPE.BEACH] =
+        Tween<double>(begin: -size.height, end: -size.height * 2)
+            .animate(_controllers[ANIMATION_TYPE.BEACH]!)
+              ..addListener(() {
+                if (_controllers[ANIMATION_TYPE.BEACH]!.isCompleted &&
+                    _animationType != ANIMATION_TYPE.BEACH_COMPLETE) {
+                  _animationType = ANIMATION_TYPE.BEACH_COMPLETE;
+                  // 해변 이동
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (_) => MainPage(pageType: PAGE_TYPE.BEACH)));
+                }
+              });
 
     return Scaffold(
       body: Container(

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MainBody extends StatefulWidget {
-  final MAIN_PAGE_TYPE pageType;
+  final PAGE_TYPE pageType;
   final Size bodySize;
   late Function changePage;
   MainBody({required this.pageType, required this.bodySize});
@@ -37,7 +37,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
 
   late ANIMATION_TYPE _animationType;
 
-  late MAIN_PAGE_TYPE _currentPageType;
+  late PAGE_TYPE _currentPageType;
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
     bodyHeight = widget.bodySize.height;
     _currentPageType = widget.pageType;
 
-    widget.changePage = (MAIN_PAGE_TYPE type) {
+    widget.changePage = (PAGE_TYPE type) {
       _currentPageType = type;
       initAnimation(initialType: ANIMATION_TYPE.CHANGE);
     };
@@ -66,10 +66,10 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
 
     _animations = {
       ANIMATION_TYPE.START: Tween<double>(
-              begin: (_currentPageType == MAIN_PAGE_TYPE.SEA)
+              begin: (_currentPageType == PAGE_TYPE.SEA)
                   ? -bodyHeight * 0.3
                   : -bodyHeight * 1.6,
-              end: (_currentPageType == MAIN_PAGE_TYPE.SEA)
+              end: (_currentPageType == PAGE_TYPE.SEA)
                   ? -bodyHeight * 0.6
                   : -bodyHeight * 1.35)
           .animate(CurvedAnimation(
@@ -83,10 +83,10 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
               }
             }),
       ANIMATION_TYPE.CHANGE: Tween<double>(
-              begin: (_currentPageType != MAIN_PAGE_TYPE.SEA)
+              begin: (_currentPageType != PAGE_TYPE.SEA)
                   ? -bodyHeight * 0.6
                   : -bodyHeight * 1.35,
-              end: (_currentPageType != MAIN_PAGE_TYPE.SEA)
+              end: (_currentPageType != PAGE_TYPE.SEA)
                   ? -bodyHeight * 1.6
                   : -bodyHeight * 0.3)
           .animate(_controllers[ANIMATION_TYPE.CHANGE]!)
@@ -105,7 +105,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant MainBody oldWidget) {
     bodyHeight = widget.bodySize.height;
-    widget.changePage = (MAIN_PAGE_TYPE type) {
+    widget.changePage = (PAGE_TYPE type) {
       _currentPageType = type;
       initAnimation(initialType: ANIMATION_TYPE.CHANGE);
     };
@@ -122,7 +122,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
 
   // 파도 애니메이션 빌드
   List<Widget> buildWaveAnimation() {
-    late double animationValue = _currentPageType == MAIN_PAGE_TYPE.SEA
+    late double animationValue = _currentPageType == PAGE_TYPE.SEA
         ? -bodyHeight * 0.6
         : -bodyHeight * 1.35;
     List<Widget> _list = [];
@@ -136,13 +136,12 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       Positioned(
         left: 0,
         right: 0,
-        bottom:
-            (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? null : animationValue,
-        top: (_currentPageType == MAIN_PAGE_TYPE.SEA) ? null : animationValue,
+        bottom: (_currentPageType == PAGE_TYPE.BEACH) ? null : animationValue,
+        top: (_currentPageType == PAGE_TYPE.SEA) ? null : animationValue,
         child: Container(
           height: bodyHeight * 1.5,
           child: RotatedBox(
-            quarterTurns: (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? 2 : 0,
+            quarterTurns: (_currentPageType == PAGE_TYPE.BEACH) ? 2 : 0,
             child: WaveAnimation(
               waveColor: _waveColor.withBlue(255).withOpacity(0.4),
               waveSpeed: 5,
@@ -156,13 +155,12 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       Positioned(
         left: 0,
         right: 0,
-        bottom:
-            (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? null : animationValue,
-        top: (_currentPageType == MAIN_PAGE_TYPE.SEA) ? null : animationValue,
+        bottom: (_currentPageType == PAGE_TYPE.BEACH) ? null : animationValue,
+        top: (_currentPageType == PAGE_TYPE.SEA) ? null : animationValue,
         child: Container(
           height: bodyHeight * 1.5,
           child: RotatedBox(
-            quarterTurns: (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? 2 : 0,
+            quarterTurns: (_currentPageType == PAGE_TYPE.BEACH) ? 2 : 0,
             child: WaveAnimation(
               waveColor: _waveColor.withBlue(200).withOpacity(0.4),
               waveSpeed: 4,
@@ -176,13 +174,12 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
       Positioned(
         left: 0,
         right: 0,
-        bottom:
-            (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? null : animationValue,
-        top: (_currentPageType == MAIN_PAGE_TYPE.SEA) ? null : animationValue,
+        bottom: (_currentPageType == PAGE_TYPE.BEACH) ? null : animationValue,
+        top: (_currentPageType == PAGE_TYPE.SEA) ? null : animationValue,
         child: Container(
           height: bodyHeight * 1.5,
           child: RotatedBox(
-            quarterTurns: (_currentPageType == MAIN_PAGE_TYPE.BEACH) ? 2 : 0,
+            quarterTurns: (_currentPageType == PAGE_TYPE.BEACH) ? 2 : 0,
             child: WaveAnimation(
               waveColor: _waveColor.withOpacity(0.4),
               waveSpeed: 3,
@@ -224,7 +221,7 @@ class _MainBodyState extends State<MainBody> with TickerProviderStateMixin {
                   : widget.bodySize.width / 50,
               backgroundColor: iconColor,
               child: SvgPicture.asset(
-                _currentPageType == MAIN_PAGE_TYPE.BEACH
+                _currentPageType == PAGE_TYPE.BEACH
                     ? 'assets/umbrella.svg'
                     : 'assets/fish.svg',
                 color: COLOR_BEACH,
