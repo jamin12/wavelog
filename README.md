@@ -14,3 +14,4 @@ blog project initialized
 4. 화면 전환 버튼을 연속해서 누르게 되면 애니메이션 전환이 매끄럽지 않음
 5. 모바일 사이즈 화면 사이즈에서는 SVG에 색상이 들어가지 않음
 6. <del>(수정 완료)애니메이션 작동 시 최적화가 필요함 (해결방법 : AnimatedBuilder를 써서 필요한 부분만 rebuild 시킴)</del>
+
