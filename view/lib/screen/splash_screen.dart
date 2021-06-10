@@ -32,8 +32,37 @@ class _SplashScreenState extends BlogState {
     waveHeight = 0;
   }
 
+  // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
   @override
-  Widget build(BuildContext context) {
+  Future<void> startAnim(Size size) async {
+    if (!isChangeAnimRun) {
+      await Future.delayed(Duration(milliseconds: 500));
+      setState(() {
+        waveHeight = size.height / 2;
+      });
+    }
+  }
+
+  @override
+  Future<void> changeAnim(Size size, PAGE_TYPE changePageType) async {
+    isChangeAnimRun = true;
+    double changeHeight =
+        changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
+
+    setState(() {
+      waveHeight = changeHeight;
+    });
+
+    await Future.delayed(Duration(seconds: 1));
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(pageType: changePageType),
+        ));
+  }
+
+  @override
+  Widget buildWidget(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     if (waveHeight == 0) startAnim(size);
     body = MainBody(
@@ -115,32 +144,6 @@ class _SplashScreenState extends BlogState {
     );
   }
 
-  // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
   @override
-  Future<void> startAnim(Size size) async {
-    if (!isChangeAnimRun) {
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() {
-        waveHeight = size.height / 2;
-      });
-    }
-  }
-
-  @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType) async {
-    isChangeAnimRun = true;
-    double changeHeight =
-        changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
-
-    setState(() {
-      waveHeight = changeHeight;
-    });
-
-    await Future.delayed(Duration(seconds: 1));
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(pageType: changePageType),
-        ));
-  }
+  void initSetting(BuildContext context) {}
 }

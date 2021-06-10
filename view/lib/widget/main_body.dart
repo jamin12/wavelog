@@ -7,17 +7,21 @@ class MainBody extends StatelessWidget {
   final double waveHeight;
   final PAGE_TYPE pageType;
   final Duration animationDuration;
+  final double drawerWidth;
 
   MainBody({
     Key? key,
     required this.waveHeight,
     required this.pageType,
     required this.animationDuration,
+    this.drawerWidth = 0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Container(
+      width: size.width - drawerWidth,
       color: COLOR_BEACH,
       child: Stack(
         children: List.generate(3, (index) {

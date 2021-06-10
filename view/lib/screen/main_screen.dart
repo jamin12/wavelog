@@ -1,3 +1,4 @@
+import 'package:blog/const.dart';
 import 'package:blog/main.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:blog/widget/main_body.dart';
@@ -21,35 +22,10 @@ class _MainScreenState extends BlogState<MainScreen> {
   @override
   late double waveHeight;
 
-  bool initSet = false;
-
   @override
   void initState() {
     super.initState();
     pageType = widget.pageType;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    if (!initSet) {
-      initSet = true;
-      waveHeight = pageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
-      startAnim(size);
-    }
-
-    body = MainBody(
-      waveHeight: waveHeight,
-      pageType: pageType,
-      animationDuration: Duration(milliseconds: 500),
-    );
-    return Container(
-      child: Stack(
-        children: [
-          body,
-        ],
-      ),
-    );
   }
 
   @override
@@ -64,4 +40,47 @@ class _MainScreenState extends BlogState<MainScreen> {
 
   @override
   Future<void> changeAnim(Size size, PAGE_TYPE changePageType) async {}
+
+  @override
+  Widget buildWidget(BuildContext context) {
+    body = MainBody(
+      waveHeight: waveHeight,
+      pageType: pageType,
+      animationDuration: Duration(milliseconds: 500),
+      drawerWidth: 300,
+    );
+    return Scaffold(
+      body: Row(
+        children: [
+          Container(
+            height: double.infinity,
+            width: 300,
+            color: COLOR_DRAWABLE,
+          ),
+          Container(
+            child: Stack(
+              children: [
+                body,
+              ],
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: COLOR_DRAWABLE,
+        onPressed: () {},
+        child: Icon(
+          Icons.edit,
+          color: COLOR_BEACH,
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initSetting(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    waveHeight = pageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
+    startAnim(size);
+  }
 }
