@@ -53,7 +53,7 @@ class _SplashScreenState extends BlogState {
       waveHeight = changeHeight;
     });
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(milliseconds: 800));
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -62,13 +62,12 @@ class _SplashScreenState extends BlogState {
   }
 
   @override
-  Widget buildWidget(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+  Widget buildWidget(BuildContext context, Size size) {
     if (waveHeight == 0) startAnim(size);
     body = MainBody(
       waveHeight: waveHeight,
       pageType: pageType,
-      animationDuration: Duration(seconds: 1),
+      animationDuration: Duration(milliseconds: 800),
     );
 
     return Scaffold(
@@ -145,5 +144,5 @@ class _SplashScreenState extends BlogState {
   }
 
   @override
-  void initSetting(BuildContext context) {}
+  void initSetting(BuildContext context, Size size) {}
 }

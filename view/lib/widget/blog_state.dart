@@ -11,18 +11,19 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     if (!initSet) {
       initSet = true;
-      initSetting(context);
+      initSetting(context, size);
     }
-    return buildWidget(context);
+    return buildWidget(context, size);
   }
 
   @protected
-  void initSetting(BuildContext context);
+  void initSetting(BuildContext context, Size size);
 
   @protected
-  Widget buildWidget(BuildContext context);
+  Widget buildWidget(BuildContext context, Size size);
 
   @protected
   Future<void> startAnim(Size size);
