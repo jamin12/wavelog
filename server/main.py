@@ -1,3 +1,8 @@
+from os import path as op
+from sys import path as sp
+
+sp.append(op.dirname(__file__))
+
 from dataclasses import asdict
 
 import uvicorn
@@ -6,8 +11,10 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from common.config import conf
-from database.conn import db
-from routes import index
+from database.conn import db, Base
+from routes import index, auth
+from middlewares.trusted_hosts import TrustedHostMiddleware
+from middlewares.token_validator import access_control
 
 
 def create_app():
@@ -38,6 +45,7 @@ def create_app():
                        except_path=["/health"])
     # 라우터 정의
     app.include_router(index.router)
+    app.include_router(auth.router, tags=["Authentication"], prefix="/api")
     return app
 
 

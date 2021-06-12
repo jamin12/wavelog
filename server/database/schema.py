@@ -1,3 +1,8 @@
+from os import path as op
+from sys import path as sp
+
+sp.append(op.dirname(op.dirname(__file__)))
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -11,7 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.expression import false, null
 
-from conn import Base, db
+from database.conn import Base, db
 
 
 class BaseMixin:
@@ -174,26 +179,27 @@ class BaseMixin:
 
 class Users(Base, BaseMixin):
     __tablename__ = "Users"
-    user_id = Column(String(40), nullable=False, primary_key=True)
+    user_name = Column(String(40), nullable=False)
     password = Column(String(40), nullable=False)
 
 
-class UsersCatagory(Base, BaseMixin):
-    __tablename__ = "UsersCatagory"
-    user_id = Column(String(40), ForeignKey("Users.user_id"), nullable=False)
-    catagory_name = Column(String(100), nullable=False)
+# class UsersCatagory(Base, BaseMixin):
+#     __tablename__ = "UsersCatagory"
+#     user_id = Column(String(40),
+#                      ForeignKey("Users.user_id"),
+#                      nullable=False,
+#                      primary_key=True)
+#     catagory_name = Column(String(100), nullable=False)
 
+# class Posts(Base, BaseMixin):
+#     __tablename__ = "Posts"
+#     post_title = Column(String(100), nullable=False)
+#     post_body = Column(String(), nullable=False)
 
-class Posts(Base, BaseMixin):
-    __tablename__ = "Posts"
-    post_title = Column(String(100), nullable=False)
-    post_body = Column(String(), nullable=False)
-
-
-class UsersPosts(Base, BaseMixin):
-    __tablename__ = "UsersPosts"
-    user_id = Column(String(40), ForeignKey("Users.user_id"), primary_key=True)
-    catagory_id = Column(Integer,
-                         ForeignKey("UsersCatagory.id"),
-                         primary_key=True)
-    posts_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)
+# class UsersPosts(Base, BaseMixin):
+#     __tablename__ = "UsersPosts"
+#     user_id = Column(String(40), ForeignKey("Users.user_id"), primary_key=True)
+#     catagory_id = Column(Integer,
+#                          ForeignKey("UsersCatagory.id"),
+#                          primary_key=True)
+#     posts_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)

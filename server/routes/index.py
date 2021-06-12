@@ -13,4 +13,6 @@ async def index():
     :return:
     """
     current_time = datetime.utcnow()
-    return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
+    return Response(
+        f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})"
+    )
