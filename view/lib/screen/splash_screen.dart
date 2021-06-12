@@ -1,7 +1,7 @@
 import 'package:blog/const.dart';
 import 'package:blog/main.dart';
 import 'package:blog/screen/main_screen.dart';
-import 'package:blog/widget/main_body.dart';
+import 'package:blog/widget/main_background.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends BlogState {
   @override
-  late MainBody body;
+  late MainBackground bodyBg;
 
   @override
   late PAGE_TYPE pageType;
@@ -30,6 +30,8 @@ class _SplashScreenState extends BlogState {
     super.initState();
     pageType = PAGE_TYPE.BEACH;
     waveHeight = 0;
+    // SharedPreference 초기화
+    //Comm_Prefs.prefs = await Comm_Prefs.newInstance();
   }
 
   // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
@@ -64,7 +66,7 @@ class _SplashScreenState extends BlogState {
   @override
   Widget buildWidget(BuildContext context, Size size) {
     if (waveHeight == 0) startAnim(size);
-    body = MainBody(
+    bodyBg = MainBackground(
       waveHeight: waveHeight,
       pageType: pageType,
       animationDuration: Duration(milliseconds: 800),
@@ -74,7 +76,7 @@ class _SplashScreenState extends BlogState {
       body: Container(
         child: Stack(
           children: [
-            body,
+            bodyBg,
             Positioned(
               top: 100,
               left: 0,
@@ -145,4 +147,7 @@ class _SplashScreenState extends BlogState {
 
   @override
   void initSetting(BuildContext context, Size size) {}
+
+  @override
+  Widget? buildDrawer(BuildContext context, Size size) => null;
 }

@@ -7,7 +7,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 class MainDrawer extends StatelessWidget {
   final PAGE_TYPE pageType;
   final Map<BeanItem, Function()>? drawers;
-  final double drawerWidth;
   final Function() changeProfile;
   // debug 용
   final bool _isWeb = identical(0, 0.0);
@@ -15,14 +14,14 @@ class MainDrawer extends StatelessWidget {
     Key? key,
     required this.pageType,
     this.drawers,
-    required this.drawerWidth,
     required this.changeProfile,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    if (_isWeb) _buildWeb();
+    // 빌드 모드 일 경우
+    if (_isWeb) return _buildWeb();
     if (size.width < MOBILE_WIDTH)
       return _buildMobile();
     else if (size.width > WEB_WIDTH)
@@ -34,7 +33,6 @@ class MainDrawer extends StatelessWidget {
   // 웹 뷰
   Widget _buildWeb() {
     return Container(
-      width: drawerWidth,
       padding: const EdgeInsets.only(top: 30.0, left: 5.0, right: 10.0),
       color: COLOR_DRAWABLE,
       height: double.infinity,
