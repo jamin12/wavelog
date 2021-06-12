@@ -8,15 +8,19 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
 )
-from sqlalchemy.orm import Session,relationship
+from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.expression import false, null
 
 from conn import Base, db
 
+
 class BaseMixin:
     id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
-    updated_at = Column(DateTime, nullable=False, default=func.utc_timestamp(), onupdate=func.utc_timestamp())
+    updated_at = Column(DateTime,
+                        nullable=False,
+                        default=func.utc_timestamp(),
+                        onupdate=func.utc_timestamp())
 
     def __init__(self):
         self._q = None
@@ -24,7 +28,10 @@ class BaseMixin:
         self.served = None
 
     def all_columns(self):
-        return [c for c in self.__table__.columns if c.primary_key is False and c.name != "created_at"]
+        return [
+            c for c in self.__table__.columns
+            if c.primary_key is False and c.name != "created_at"
+        ]
 
     def __hash__(self):
         return hash(self.id)
@@ -64,7 +71,9 @@ class BaseMixin:
             query = query.filter(col == val)
 
         if query.count() > 1:
-            raise Exception("Only one row is supposed to be returned, but got more than one.")
+            raise Exception(
+                "Only one row is supposed to be returned, but got more than one."
+            )
         result = query.first()
         if not session:
             sess.close()
@@ -119,7 +128,8 @@ class BaseMixin:
                 col_name = a
                 is_asc = True
             col = self.cls_attr(col_name)
-            self._q = self._q.order_by(col.asc()) if is_asc else self._q.order_by(col.desc())
+            self._q = self._q.order_by(
+                col.asc()) if is_asc else self._q.order_by(col.desc())
         return self
 
     def update(self, auto_commit: bool = False, **kwargs):
@@ -128,7 +138,7 @@ class BaseMixin:
         ret = None
 
         self._session.flush()
-        if qs > 0 :
+        if qs > 0:
             ret = self._q.first()
         if auto_commit:
             self._session.commit()
@@ -161,23 +171,29 @@ class BaseMixin:
         else:
             self._session.flush()
 
-class Users(Base,BaseMixin):
+
+class Users(Base, BaseMixin):
     __tablename__ = "Users"
-    user_id = Column(String(40),nullable=False)
-    password = Column(String(40),nullable=False)
+    user_id = Column(String(40), nullable=False, primary_key=True)
+    password = Column(String(40), nullable=False)
 
-class UsersCatagory(Base,BaseMixin):
+
+class UsersCatagory(Base, BaseMixin):
     __tablename__ = "UsersCatagory"
-    user_id = Column(String(40),ForeignKey("Users.user_id"),nullable=False)
-    catagory_name = Column(String(100),nullable=False)
+    user_id = Column(String(40), ForeignKey("Users.user_id"), nullable=False)
+    catagory_name = Column(String(100), nullable=False)
 
 
-class Posts(Base,BaseMixin):
+class Posts(Base, BaseMixin):
     __tablename__ = "Posts"
-    post_title = Column(String(100),nullable=False)
-    post_body = Column(String(),nullable=False)
+    post_title = Column(String(100), nullable=False)
+    post_body = Column(String(), nullable=False)
 
-class UsersPosts(Base,BaseMixin):
-    user_id = Column(String(40),ForeignKey("Users.user_id"))
-    catagory_id = Column(Integer,ForeignKey("UsersCatagory.id"))
-    posts_id = Column(Integer,ForeignKey("Posts.id"))
+
+class UsersPosts(Base, BaseMixin):
+    __tablename__ = "UsersPosts"
+    user_id = Column(String(40), ForeignKey("Users.user_id"), primary_key=True)
+    catagory_id = Column(Integer,
+                         ForeignKey("UsersCatagory.id"),
+                         primary_key=True)
+    posts_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)

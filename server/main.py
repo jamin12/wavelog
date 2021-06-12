@@ -1,11 +1,14 @@
 from dataclasses import asdict
 
 import uvicorn
-from fastapi import FastAPI,Depends
+from fastapi import FastAPI, Depends
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from common.config import conf
 from database.conn import db
 from routes import index
+
 
 def create_app():
     """
@@ -21,7 +24,18 @@ def create_app():
     # 레디스 이니셜라이즈
 
     # 미들웨어 정의
-
+    app.add_middleware(middleware_class=BaseHTTPMiddleware,
+                       dispatch=access_control)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=conf().ALLOW_SITE,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.add_middleware(TrustedHostMiddleware,
+                       allowed_hosts=conf().TRUSTED_HOSTS,
+                       except_path=["/health"])
     # 라우터 정의
     app.include_router(index.router)
     return app
