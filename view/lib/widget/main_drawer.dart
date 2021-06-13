@@ -21,19 +21,21 @@ class MainDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     // 빌드 모드 일 경우
-    if (_isWeb) return _buildWeb();
+    // if (_isWeb) return _buildWeb();
     if (size.width < MOBILE_WIDTH)
       return _buildMobile();
-    else if (size.width > WEB_WIDTH)
+    else if (size.width > WEB_WIDTH) {
+      if (size.width < 1530) return _buildTablet();
       return _buildWeb();
-    else
+    } else
       return _buildTablet();
   }
 
   // 웹 뷰
   Widget _buildWeb() {
     return Container(
-      padding: const EdgeInsets.only(top: 30.0, left: 5.0, right: 10.0),
+      margin: const EdgeInsets.all(0),
+      padding: const EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0),
       color: COLOR_DRAWABLE,
       height: double.infinity,
       child: SingleChildScrollView(
@@ -63,7 +65,7 @@ class MainDrawer extends StatelessWidget {
             ),
             Divider(
               color: COLOR_BEACH,
-              indent: 10.0,
+              height: 50.0,
               thickness: 1.0,
             ),
             Material(
@@ -101,7 +103,69 @@ class MainDrawer extends StatelessWidget {
 
   // 태블릿 뷰
   Widget _buildTablet() {
-    return Container();
+    return Container(
+      margin: const EdgeInsets.all(0),
+      padding: const EdgeInsets.only(top: 30.0),
+      color: COLOR_DRAWABLE,
+      height: double.infinity,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: COLOR_BEACH,
+                    child: SvgPicture.asset(
+                      'assets/${pageType == PAGE_TYPE.BEACH ? 'umbrella' : 'fish'}.svg',
+                      color: COLOR_DRAWABLE,
+                      width: 25,
+                      height: 25,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Divider(
+                color: COLOR_BEACH,
+                height: 50.0,
+                thickness: 1.0,
+              ),
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: changeProfile,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundColor: COLOR_BEACH,
+                        child: SvgPicture.asset(
+                          'assets/${pageType == PAGE_TYPE.SEA ? 'umbrella' : 'fish'}.svg',
+                          color: COLOR_DRAWABLE,
+                          width: 25,
+                          height: 25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // 모바일 뷰

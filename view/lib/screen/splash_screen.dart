@@ -46,7 +46,8 @@ class _SplashScreenState extends BlogState {
   }
 
   @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType) async {
+  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
+      [Widget? changeWidget = null]) async {
     isChangeAnimRun = true;
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;

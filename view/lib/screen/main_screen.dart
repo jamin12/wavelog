@@ -1,5 +1,6 @@
 import 'package:blog/const.dart';
 import 'package:blog/main.dart';
+import 'package:blog/screen/category_screen.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:blog/widget/main_background.dart';
 import 'package:blog/widget/main_drawer.dart';
@@ -43,7 +44,8 @@ class _MainScreenState extends BlogState<MainScreen> {
   }
 
   @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType) async {
+  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
+      [Widget? changeWidget = null]) async {
     // todo: 여기서 리스트 제거
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
@@ -53,11 +55,20 @@ class _MainScreenState extends BlogState<MainScreen> {
     });
     // 서버 로드 시간
     await Future.delayed(Duration(milliseconds: 800));
-    Navigator.pushReplacement(
+    if (changeWidget == null) {
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => MainScreen(pageType: changePageType),
-        ));
+        ),
+      );
+    } else
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => changeWidget,
+        ),
+      );
   }
 
   @override
@@ -113,7 +124,10 @@ class _MainScreenState extends BlogState<MainScreen> {
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        changeAnim(
+                            size, pageType, CategoryScreen(pageType: pageType));
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(20.0),
                         alignment: Alignment.topLeft,

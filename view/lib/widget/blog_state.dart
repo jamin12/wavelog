@@ -39,6 +39,7 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
     return viewFomatter(viewType, size);
   }
 
+  /// View Fomatter
   Widget viewFomatter(VIEW_TYPE viewType, Size size) {
     switch (viewType) {
       case VIEW_TYPE.WEB:
@@ -65,18 +66,24 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
     }
   }
 
+  /// Initialized Setting
   @protected
   void initSetting(BuildContext context, Size size);
 
+  /// Main Widget Build
   @protected
   Widget buildWidget(BuildContext context, Size size);
 
+  /// Drawer Build
   @protected
   Widget? buildDrawer(BuildContext context, Size size);
 
+  /// 시작 Animation
   @protected
   Future<void> startAnim(Size size);
 
+  /// 변환 Animation 및 페이지 전환 역할
   @protected
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType);
+  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
+      [Widget? changeWidget = null]);
 }
