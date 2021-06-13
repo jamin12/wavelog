@@ -26,4 +26,6 @@ class UserOut(BaseModel):
 class GetUserList(BaseModel):
     id: int = None
     user_name: str = None
-    create_at: datetime = None
+
+    class Config:
+        orm_mode = True

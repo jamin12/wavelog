@@ -1,8 +1,9 @@
-from datetime import datetime
+from os import path as op
+from sys import path as sp
+
+sp.append(op.dirname(op.dirname(__file__)))
 
 from fastapi import APIRouter
-from starlette.requests import Request
-from starlette.responses import Response
 from typing import List
 
 from model import GetUserList
@@ -17,5 +18,5 @@ async def index():
     ELB 상태 체크용 API
     :return:
     """
-    all_users = Users.all()
+    all_users = Users.filter().all()
     return all_users

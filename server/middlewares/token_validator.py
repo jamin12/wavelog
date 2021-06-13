@@ -35,8 +35,7 @@ async def access_control(request: Request, call_next):
     if await url_pattern_check(url,
                                EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
         response = await call_next(request)
-        if url != "/":
-            await api_logger(request=request, response=response)
+        await api_logger(request=request, response=response)
         return response
 
 
