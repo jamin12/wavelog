@@ -1,18 +1,21 @@
 from datetime import datetime
 
 from fastapi import APIRouter
+from starlette.requests import Request
 from starlette.responses import Response
+from typing import List
+
+from model import GetUserList
+from database.schema import Users
 
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/", response_model=List[GetUserList])
 async def index():
     """
     ELB 상태 체크용 API
     :return:
     """
-    current_time = datetime.utcnow()
-    return Response(
-        f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})"
-    )
+    all_users = Users.all()
+    return all_users

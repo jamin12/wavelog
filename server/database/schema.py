@@ -180,7 +180,7 @@ class BaseMixin:
 class Users(Base, BaseMixin):
     __tablename__ = "Users"
     user_name = Column(String(40), nullable=False)
-    password = Column(String(40), nullable=False)
+    password = Column(String(200), nullable=False)
 
 
 # class UsersCatagory(Base, BaseMixin):
