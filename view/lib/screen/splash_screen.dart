@@ -36,7 +36,7 @@ class _SplashScreenState extends BlogState {
 
   // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
   @override
-  Future<void> startAnim(Size size) async {
+  Future<void> startAnim({required Size size}) async {
     if (!isChangeAnimRun) {
       await Future.delayed(Duration(milliseconds: 500));
       setState(() {
@@ -46,8 +46,11 @@ class _SplashScreenState extends BlogState {
   }
 
   @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
-      [Widget? changeWidget = null]) async {
+  Future<void> changeAnim({
+    required Size size,
+    required PAGE_TYPE changePageType,
+    Widget? changeWidget = null,
+  }) async {
     isChangeAnimRun = true;
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
@@ -66,7 +69,7 @@ class _SplashScreenState extends BlogState {
 
   @override
   Widget buildWidget(BuildContext context, Size size) {
-    if (waveHeight == 0) startAnim(size);
+    if (waveHeight == 0) startAnim(size: size);
     bodyBg = MainBackground(
       waveHeight: waveHeight,
       pageType: pageType,
@@ -84,7 +87,7 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  changeAnim(size, PAGE_TYPE.SEA);
+                  changeAnim(size: size, changePageType: PAGE_TYPE.SEA);
                 },
                 child: CircleAvatar(
                   radius: 100,
@@ -115,7 +118,7 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  changeAnim(size, PAGE_TYPE.BEACH);
+                  changeAnim(size: size, changePageType: PAGE_TYPE.BEACH);
                 },
                 child: CircleAvatar(
                   radius: 100,

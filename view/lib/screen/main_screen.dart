@@ -1,5 +1,6 @@
 import 'package:blog/const.dart';
 import 'package:blog/main.dart';
+import 'package:blog/model/bean_item.dart';
 import 'package:blog/screen/category_screen.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:blog/widget/main_background.dart';
@@ -24,15 +25,25 @@ class _MainScreenState extends BlogState<MainScreen> {
 
   @override
   late double waveHeight;
+  // todo: 임시 데이터
+  late List<BeanItem> _tempCategoryData;
 
   @override
   void initState() {
     super.initState();
     pageType = widget.pageType;
+    // todo : 임시 데이터 추가
+    _tempCategoryData = List<BeanItem>.generate(
+      20,
+      (index) => BeanItem(
+          id: '$index',
+          color: Colors.accents[index % Colors.accents.length],
+          title: '$index'),
+    );
   }
 
   @override
-  Future<void> startAnim(Size size) async {
+  Future<void> startAnim({required Size size}) async {
     // 서버 로드 시간
     await Future.delayed(Duration(milliseconds: 500));
     // todo: 여기서 리스트 추가
@@ -44,8 +55,11 @@ class _MainScreenState extends BlogState<MainScreen> {
   }
 
   @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
-      [Widget? changeWidget = null]) async {
+  Future<void> changeAnim({
+    required Size size,
+    required PAGE_TYPE changePageType,
+    Widget? changeWidget = null,
+  }) async {
     // todo: 여기서 리스트 제거
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
@@ -101,7 +115,7 @@ class _MainScreenState extends BlogState<MainScreen> {
                 bottom: 20.0,
               ),
               child: GridView.builder(
-                itemCount: 5,
+                itemCount: _tempCategoryData.length,
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
@@ -126,15 +140,21 @@ class _MainScreenState extends BlogState<MainScreen> {
                     child: InkWell(
                       onTap: () {
                         changeAnim(
-                            size, pageType, CategoryScreen(pageType: pageType));
+                            size: size,
+                            changePageType: pageType,
+                            changeWidget: CategoryScreen(
+                              pageType: pageType,
+                              category: _tempCategoryData[index],
+                            ));
                       },
                       child: Container(
                         padding: const EdgeInsets.all(20.0),
                         alignment: Alignment.topLeft,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CircleAvatar(
-                              backgroundColor: Colors.red,
+                              backgroundColor: _tempCategoryData[index].color,
                               radius: 20.0,
                               child: SvgPicture.asset(
                                 'assets/fish.svg',
@@ -142,7 +162,13 @@ class _MainScreenState extends BlogState<MainScreen> {
                                 width: 20.0,
                                 height: 20.0,
                               ),
-                            )
+                            ),
+                            Expanded(
+                                child: Center(
+                                    child: Text(
+                              _tempCategoryData[index].title,
+                              style: TextStyle(fontSize: 20.0), // todo : 임시 사이즈
+                            )))
                           ],
                         ),
                       ),
@@ -168,7 +194,7 @@ class _MainScreenState extends BlogState<MainScreen> {
   @override
   void initSetting(BuildContext context, Size size) {
     waveHeight = pageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
-    startAnim(size);
+    startAnim(size: size);
   }
 
   @override
@@ -176,8 +202,11 @@ class _MainScreenState extends BlogState<MainScreen> {
     return MainDrawer(
         pageType: pageType,
         changeProfile: () {
-          changeAnim(size,
-              pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH);
+          changeAnim(
+            size: size,
+            changePageType:
+                pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
+          );
         });
   }
 }

@@ -80,10 +80,13 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
 
   /// 시작 Animation
   @protected
-  Future<void> startAnim(Size size);
+  Future<void> startAnim({required Size size});
 
   /// 변환 Animation 및 페이지 전환 역할
   @protected
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
-      [Widget? changeWidget = null]);
+  Future<void> changeAnim({
+    required Size size,
+    required PAGE_TYPE changePageType,
+    Widget? changeWidget = null,
+  });
 }

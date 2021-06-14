@@ -1,3 +1,4 @@
+import 'package:blog/const.dart';
 import 'package:flutter/material.dart';
 
 class MobileFomatter extends StatelessWidget {
@@ -13,6 +14,12 @@ class MobileFomatter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: drawerWidget != null
+          ? AppBar(
+              iconTheme: IconThemeData(color: COLOR_BEACH),
+              backgroundColor: COLOR_DRAWABLE,
+            )
+          : null,
       body: bodyWidget,
       drawer: (drawerWidget != null)
           ? Drawer(

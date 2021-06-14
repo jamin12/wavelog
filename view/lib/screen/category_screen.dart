@@ -1,5 +1,6 @@
 import 'package:blog/const.dart';
 import 'package:blog/main.dart';
+import 'package:blog/model/bean_item.dart';
 import 'package:blog/screen/main_screen.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:blog/widget/main_background.dart';
@@ -9,7 +10,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class CategoryScreen extends StatefulWidget {
   final PAGE_TYPE pageType;
-  const CategoryScreen({Key? key, required this.pageType}) : super(key: key);
+  final BeanItem category;
+  const CategoryScreen({
+    Key? key,
+    required this.pageType,
+    required this.category,
+  }) : super(key: key);
 
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
@@ -25,14 +31,24 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
   @override
   late double waveHeight;
 
+  late List<BeanItem> _tempContentsData;
+
   @override
   void initState() {
     super.initState();
     pageType = widget.pageType;
+    _tempContentsData = List.generate(
+        100,
+        (index) => BeanItem(
+            id: '$index',
+            title: '$index title',
+            contents: '$index contents',
+            views: index,
+            writeDate: '2021-06-14 23:20'));
   }
 
   @override
-  Future<void> startAnim(Size size) async {
+  Future<void> startAnim({required Size size}) async {
     // 서버 로드 시간
     await Future.delayed(Duration(milliseconds: 500));
     // todo: 여기서 리스트 추가
@@ -44,8 +60,10 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
   }
 
   @override
-  Future<void> changeAnim(Size size, PAGE_TYPE changePageType,
-      [Widget? changeWidget = null]) async {
+  Future<void> changeAnim(
+      {required Size size,
+      required PAGE_TYPE changePageType,
+      Widget? changeWidget = null}) async {
     // todo: 여기서 리스트 제거
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
@@ -82,71 +100,15 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
       body: Stack(
         children: [
           bodyBg,
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            physics: BouncingScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: 100,
-                left: viewType == VIEW_TYPE.MOBILE
-                    ? size.width / 10
-                    : viewType == VIEW_TYPE.TABLET
-                        ? size.width / 10
-                        : size.width / 7,
-                right: viewType == VIEW_TYPE.MOBILE
-                    ? size.width / 10
-                    : viewType == VIEW_TYPE.TABLET
-                        ? size.width / 10
-                        : size.width / 7,
-                bottom: 20.0,
-              ),
-              child: GridView.builder(
-                itemCount: 5,
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                scrollDirection: Axis.vertical,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: viewType == VIEW_TYPE.MOBILE
-                        ? 1
-                        : viewType == VIEW_TYPE.TABLET
-                            ? 2
-                            : 3,
-                    childAspectRatio: 5 / 7, // width / height
-                    crossAxisSpacing: 30.0,
-                    mainAxisSpacing: 20.0,
-                    mainAxisExtent: size.height / 3),
-                itemBuilder: (context, index) => Container(
-                  decoration: BoxDecoration(
-                    color: COLOR_BEACH,
-                    border: Border.all(width: 1.0, color: COLOR_DRAWABLE),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.all(20.0),
-                        alignment: Alignment.topLeft,
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: Colors.red,
-                              radius: 20.0,
-                              child: SvgPicture.asset(
-                                'assets/fish.svg',
-                                color: COLOR_BEACH,
-                                width: 20.0,
-                                height: 20.0,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          Container(
+            child: ListView(
+              padding: viewType == VIEW_TYPE.WEB
+                  ? EdgeInsets.symmetric(horizontal: size.width / 7)
+                  : viewType == VIEW_TYPE.TABLET
+                      ? EdgeInsets.symmetric(horizontal: size.width / 10)
+                      : EdgeInsets.symmetric(horizontal: size.width / 20),
+              physics: BouncingScrollPhysics(),
+              children: _buildMainItem(),
             ),
           ),
         ],
@@ -162,10 +124,91 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
     );
   }
 
+  List<Widget> _buildMainItem() {
+    var list = [
+      viewType == VIEW_TYPE.MOBILE
+          ? const SizedBox(
+              height: 50,
+            )
+          : const SizedBox(
+              height: 100.0,
+            ),
+      Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: widget.category.color,
+            radius: 30,
+            child: SvgPicture.asset(
+              'assets/fish.svg',
+              color: COLOR_BEACH,
+              width: 30,
+              height: 30,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Text(
+              widget.category.title,
+              style: TextStyle(fontSize: 30.0, color: COLOR_DRAWABLE),
+            ),
+          ),
+        ],
+      ),
+      Divider(
+        color: COLOR_DRAWABLE,
+        thickness: 1.0,
+        height: 30.0,
+      ),
+    ];
+
+    list.addAll(_tempContentsData.map((bean) => Column(
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  width: 50,
+                  child: Text(
+                    bean.id,
+                    style: TextStyle(fontSize: 10.0, color: COLOR_DRAWABLE),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      bean.title,
+                      style: TextStyle(fontSize: 20.0, color: COLOR_DRAWABLE),
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    bean.writeDate,
+                    style: TextStyle(fontSize: 15.0, color: COLOR_DRAWABLE),
+                  ),
+                ),
+              ],
+            ),
+            Divider(
+              height: 10.0,
+              thickness: 1.0,
+              color: COLOR_DRAWABLE,
+            )
+          ],
+        )));
+
+    return list;
+  }
+
   @override
   void initSetting(BuildContext context, Size size) {
     waveHeight = pageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
-    startAnim(size);
+    startAnim(size: size);
   }
 
   @override
@@ -173,8 +216,11 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
     return MainDrawer(
         pageType: pageType,
         changeProfile: () {
-          changeAnim(size,
-              pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH);
+          changeAnim(
+            size: size,
+            changePageType:
+                pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
+          );
         });
   }
 }

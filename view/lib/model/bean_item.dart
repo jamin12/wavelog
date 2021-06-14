@@ -13,11 +13,14 @@ class BeanItem {
   final int views;
   // 내용
   final String contents;
-
-  BeanItem(this.id,
-      [this.title = '',
+  // 작성날짜
+  final String writeDate;
+  BeanItem(
+      {required this.id,
+      this.title = '',
       this.color = Colors.red,
       this.writer = '',
       this.views = 0,
-      this.contents = '']);
+      this.contents = '',
+      this.writeDate = ''});
 }
