@@ -18,8 +18,8 @@ class LocalConfig(Config):
     """
     개발 모드
     """
-    DB_URL: str = "mysql+pymysql://마리아 디비 정보 넣으세요~~?charset=utf8mb4"
-                                    #root:qwer1234@localhost:3306/test_apiserver
+    DB_URL: str = "mysql+pymysql://root:1234@localhost:3306/waveblog?charset=utf8mb4"
+
 
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
