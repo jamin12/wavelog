@@ -48,7 +48,7 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
           drawerWidget: buildDrawer(context, size),
         );
       case VIEW_TYPE.TABLET:
-        return WebFomatter(
+        return TabletFomatter(
           bodyWidget: buildWidget(context, size),
           drawerWidget: buildDrawer(context, size),
         );
