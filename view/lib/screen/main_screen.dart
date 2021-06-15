@@ -34,7 +34,7 @@ class _MainScreenState extends BlogState<MainScreen> {
     pageType = widget.pageType;
     // todo : 임시 데이터 추가
     _tempCategoryData = List<BeanItem>.generate(
-      20,
+      4,
       (index) => BeanItem(
           id: '$index',
           color: Colors.accents[index % Colors.accents.length],
@@ -140,12 +140,14 @@ class _MainScreenState extends BlogState<MainScreen> {
                     child: InkWell(
                       onTap: () {
                         changeAnim(
-                            size: size,
-                            changePageType: pageType,
-                            changeWidget: CategoryScreen(
-                              pageType: pageType,
-                              category: _tempCategoryData[index],
-                            ));
+                          size: size,
+                          changePageType: pageType,
+                          changeWidget: CategoryScreen(
+                            pageType: pageType,
+                            category: _tempCategoryData[index],
+                            categorys: _tempCategoryData,
+                          ),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.all(20.0),
@@ -157,7 +159,7 @@ class _MainScreenState extends BlogState<MainScreen> {
                               backgroundColor: _tempCategoryData[index].color,
                               radius: 20.0,
                               child: SvgPicture.asset(
-                                'assets/fish.svg',
+                                'assets/${pageType == PAGE_TYPE.BEACH ? 'umbrella' : 'fish'}.svg',
                                 color: COLOR_BEACH,
                                 width: 20.0,
                                 height: 20.0,
@@ -200,13 +202,33 @@ class _MainScreenState extends BlogState<MainScreen> {
   @override
   Widget? buildDrawer(BuildContext context, Size size) {
     return MainDrawer(
-        pageType: pageType,
-        changeProfile: () {
-          changeAnim(
-            size: size,
-            changePageType:
-                pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
-          );
-        });
+      drawers: Map.fromIterables(
+        _tempCategoryData,
+        List.generate(
+          _tempCategoryData.length,
+          (index) => () {
+            changeAnim(
+              size: size,
+              changePageType: pageType,
+              changeWidget: CategoryScreen(
+                pageType: pageType,
+                category: _tempCategoryData[index],
+                categorys: _tempCategoryData,
+              ),
+            );
+          },
+        ),
+      ),
+      pageType: pageType,
+      myProfile: () => changeAnim(
+        size: size,
+        changePageType: pageType,
+      ),
+      changeProfile: () => changeAnim(
+        size: size,
+        changePageType:
+            pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
+      ),
+    );
   }
 }

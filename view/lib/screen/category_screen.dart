@@ -11,10 +11,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 class CategoryScreen extends StatefulWidget {
   final PAGE_TYPE pageType;
   final BeanItem category;
+  final List<BeanItem> categorys;
   const CategoryScreen({
     Key? key,
     required this.pageType,
     required this.category,
+    required this.categorys,
   }) : super(key: key);
 
   @override
@@ -139,7 +141,7 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
             backgroundColor: widget.category.color,
             radius: 30,
             child: SvgPicture.asset(
-              'assets/fish.svg',
+              'assets/${pageType == PAGE_TYPE.BEACH ? 'umbrella' : 'fish'}.svg',
               color: COLOR_BEACH,
               width: 30,
               height: 30,
@@ -214,13 +216,33 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
   @override
   Widget? buildDrawer(BuildContext context, Size size) {
     return MainDrawer(
-        pageType: pageType,
-        changeProfile: () {
-          changeAnim(
-            size: size,
-            changePageType:
-                pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
-          );
-        });
+      pageType: pageType,
+      drawers: Map.fromIterables(
+        widget.categorys,
+        List.generate(
+          widget.categorys.length,
+          (index) => () {
+            changeAnim(
+              size: size,
+              changePageType: pageType,
+              changeWidget: CategoryScreen(
+                pageType: pageType,
+                category: widget.categorys[index],
+                categorys: widget.categorys,
+              ),
+            );
+          },
+        ),
+      ),
+      myProfile: () => changeAnim(
+        size: size,
+        changePageType: pageType,
+      ),
+      changeProfile: () => changeAnim(
+        size: size,
+        changePageType:
+            pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
+      ),
+    );
   }
 }
