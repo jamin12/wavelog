@@ -61,7 +61,7 @@ async def login(user_info: UserRegister):
     """
     로그인 API
     """
-    is_exist = await user_exist(user_name=Users.user_name)
+    is_exist = await user_exist(user_name=user_info.user_name)
     #사용자 이름과 비밀번호가 제공 안되었을때
     if not user_info.user_name or not user_info.password:
         return JSONResponse(
@@ -78,8 +78,8 @@ async def login(user_info: UserRegister):
             status_code=400,
             content=dict(msg="user_name or password must be provided"))
     token = dict(
-        Authorization="test"
-        # f"Bearer {create_access_token(data=UserOut.from_orm(user).dict(exclude={'password'}),)}"
+        Authorization=
+        f"Bearer {create_access_token(data=UserOut.from_orm(user).dict(exclude={'password'}),)}"
     )
     return token
 
@@ -92,11 +92,11 @@ async def user_exist(user_name: str):
     return False
 
 
-#엑세스 토큰 만들기
-# def create_access_token(*, data: dict = None, expires_delta: int = None):
-#     to_encode = data.copy()
-#     if expires_delta:
-#         to_encode.update(
-#             {"exp": datetime.utcnow() + timedelta(hours=expires_delta)})
-#     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
-#     return encoded_jwt
+# 엑세스 토큰 만들기
+def create_access_token(*, data: dict = None, expires_delta: int = None):
+    to_encode = data.copy()
+    if expires_delta:
+        to_encode.update(
+            {"exp": datetime.utcnow() + timedelta(hours=expires_delta)})
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return encoded_jwt

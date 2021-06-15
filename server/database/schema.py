@@ -14,7 +14,6 @@ from sqlalchemy import (
     ForeignKey,
 )
 from sqlalchemy.orm import Session, relationship
-from sqlalchemy.sql.expression import false, null
 
 from database.conn import Base, db
 
@@ -74,7 +73,8 @@ class BaseMixin:
         for key, val in kwargs.items():
             col = getattr(cls, key)
             query = query.filter(col == val)
-
+        print(query.count(),
+              "$)!@(*#&)(*^$)(@!*^#)(@*&#)(!@*^$)(!@*&#)(!@*^#)(!@*$&")
         if query.count() > 1:
             raise Exception(
                 "Only one row is supposed to be returned, but got more than one."
@@ -160,6 +160,7 @@ class BaseMixin:
             self._session.commit()
 
     def all(self):
+        print(self.served)
         result = self._q.all()
         self.close()
         return result
@@ -177,18 +178,27 @@ class BaseMixin:
 
 
 class Users(Base, BaseMixin):
+    # 유저 테이블
     __tablename__ = "Users"
-    user_name = Column(String(40), nullable=False)
+    user_name = Column(String(40), nullable=False, primary_key=True)
     password = Column(String(200), nullable=False)
 
 
-# class UsersCatagory(Base, BaseMixin):
-#     __tablename__ = "UsersCatagory"
-#     user_id = Column(String(40),
-#                      ForeignKey("Users.user_id"),
-#                      nullable=False,
-#                      primary_key=True)
-#     catagory_name = Column(String(100), nullable=False)
+class Catagory(Base, BaseMixin):
+    #카테고리 테이블
+    __tablename__ = "Catagory"
+    catagory_name = Column(String(200), nullable=False)
+
+
+class UsersCatagory(Base, BaseMixin):
+    #유저 카테고리 테이블
+    __tablename__ = "UsersCatagory"
+    user_id = Column(Integer, ForeignKey("Users.id"), primary_key=True)
+    user_name = Column(String(40),
+                       ForeignKey("Users.user_name"),
+                       primary_key=True)
+    catagory_name = Column(String(200), ForeignKey("Catagory.catagory_name"))
+
 
 # class Posts(Base, BaseMixin):
 #     __tablename__ = "Posts"
