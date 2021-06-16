@@ -9,8 +9,7 @@ class MainDrawer extends StatelessWidget {
   final Map<BeanItem, Function()>? drawers;
   final Function() changeProfile;
   final Function() myProfile;
-  // debug 용
-  final bool _isWeb = identical(0, 0.0);
+
   const MainDrawer({
     Key? key,
     required this.pageType,
@@ -22,20 +21,19 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    // 빌드 모드 일 경우
-    // if (_isWeb) return _buildWeb();
 
     if (size.width < MOBILE_WIDTH)
-      return _buildMobile();
+      return _buildMobile(context);
     else if (size.width > WEB_WIDTH) {
-      if (size.width < 1530) return _buildTablet();
-      return _buildWeb();
+      if (size.width < 1530) return _buildTablet(context);
+      return _buildWeb(context);
     } else
-      return _buildTablet();
+      return _buildTablet(context);
   }
 
   // 카테고리 빌드
-  List<Widget> _buildCategorys(bool isSmall) {
+  List<Widget> _buildCategorys(BuildContext context,
+      {required bool isSmall, required bool isMobile}) {
     List<Widget> _list = [];
     if (drawers != null) {
       drawers!.forEach((bean, onTap) {
@@ -64,7 +62,12 @@ class MainDrawer extends StatelessWidget {
                   ),
                 )
               : ListTile(
-                  onTap: onTap,
+                  onTap: isMobile
+                      ? () {
+                          Navigator.pop(context);
+                          onTap();
+                        }
+                      : onTap,
                   leading: CircleAvatar(
                     radius: 25,
                     backgroundColor: bean.color,
@@ -87,21 +90,21 @@ class MainDrawer extends StatelessWidget {
   }
 
   // 웹 뷰
-  Widget _buildWeb() {
-    return _buildBigDrawer();
+  Widget _buildWeb(BuildContext context) {
+    return _buildBigDrawer(context);
   }
 
   // 태블릿 뷰
-  Widget _buildTablet() {
-    return _buildSmallDrawer();
+  Widget _buildTablet(BuildContext context) {
+    return _buildSmallDrawer(context);
   }
 
   // 모바일 뷰
-  Widget _buildMobile() {
-    return _buildBigDrawer();
+  Widget _buildMobile(BuildContext context) {
+    return _buildBigDrawer(context, true);
   }
 
-  Container _buildBigDrawer() {
+  Container _buildBigDrawer(BuildContext context, [bool isMobile = false]) {
     return Container(
       margin: const EdgeInsets.all(0),
       padding: const EdgeInsets.only(top: 30.0, left: 10.0, right: 10.0),
@@ -114,7 +117,12 @@ class MainDrawer extends StatelessWidget {
           physics: BouncingScrollPhysics(),
           children: [
             ListTile(
-              onTap: myProfile,
+              onTap: isMobile
+                  ? () {
+                      Navigator.pop(context);
+                      myProfile();
+                    }
+                  : myProfile,
               leading: CircleAvatar(
                 radius: 25,
                 backgroundColor: COLOR_BEACH,
@@ -136,7 +144,12 @@ class MainDrawer extends StatelessWidget {
               thickness: 1.0,
             ),
             ListTile(
-              onTap: changeProfile,
+              onTap: isMobile
+                  ? () {
+                      Navigator.pop(context);
+                      changeProfile();
+                    }
+                  : changeProfile,
               leading: CircleAvatar(
                 radius: 25,
                 backgroundColor: COLOR_BEACH,
@@ -152,13 +165,14 @@ class MainDrawer extends StatelessWidget {
                 style: TextStyle(color: COLOR_BEACH, fontSize: 15),
               ),
             ),
-          ]..addAll(_buildCategorys(false)),
+          ]..addAll(
+              _buildCategorys(context, isSmall: false, isMobile: isMobile)),
         ),
       ),
     );
   }
 
-  Container _buildSmallDrawer() {
+  Container _buildSmallDrawer(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(0),
       padding: const EdgeInsets.only(top: 30.0),
@@ -221,7 +235,7 @@ class MainDrawer extends StatelessWidget {
                   ],
                 ),
               ),
-            ]..addAll(_buildCategorys(true)),
+            ]..addAll(_buildCategorys(context, isSmall: true, isMobile: false)),
           ),
         ),
       ),

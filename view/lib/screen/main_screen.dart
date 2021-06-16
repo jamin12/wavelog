@@ -25,6 +25,9 @@ class _MainScreenState extends BlogState<MainScreen> {
 
   @override
   late double waveHeight;
+
+  @override
+  late Duration bgAnimDuration;
   // todo: 임시 데이터
   late List<BeanItem> _tempCategoryData;
 
@@ -40,10 +43,12 @@ class _MainScreenState extends BlogState<MainScreen> {
           color: Colors.accents[index % Colors.accents.length],
           title: '$index'),
     );
+    bgAnimDuration = Duration(milliseconds: 500);
   }
 
   @override
   Future<void> startAnim({required Size size}) async {
+    super.startAnim(size: size);
     // 서버 로드 시간
     await Future.delayed(Duration(milliseconds: 500));
     // todo: 여기서 리스트 추가
@@ -60,6 +65,7 @@ class _MainScreenState extends BlogState<MainScreen> {
     required PAGE_TYPE changePageType,
     Widget? changeWidget = null,
   }) async {
+    super.changeAnim(size: size, changePageType: changePageType);
     // todo: 여기서 리스트 제거
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
@@ -67,31 +73,31 @@ class _MainScreenState extends BlogState<MainScreen> {
     setState(() {
       waveHeight = changeHeight;
     });
-    // 서버 로드 시간
-    await Future.delayed(Duration(milliseconds: 800));
-    if (changeWidget == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(pageType: changePageType),
-        ),
-      );
-    } else
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => changeWidget,
-        ),
-      );
+  }
+
+  @override
+  void bgAnimationOnEnd(ANIMATION_STATE oldState, PAGE_TYPE changePageType,
+      Widget? changeWidget) {
+    if (oldState == ANIMATION_STATE.CHANGE_ANIM_RUNNING) {
+      if (changeWidget == null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(pageType: changePageType),
+          ),
+        );
+      } else
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => changeWidget,
+          ),
+        );
+    }
   }
 
   @override
   Widget buildWidget(BuildContext context, Size size) {
-    bodyBg = MainBackground(
-      waveHeight: waveHeight,
-      pageType: pageType,
-      animationDuration: Duration(milliseconds: 500),
-    );
     return Scaffold(
       body: Stack(
         children: [
@@ -139,15 +145,16 @@ class _MainScreenState extends BlogState<MainScreen> {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        changeAnim(
-                          size: size,
-                          changePageType: pageType,
-                          changeWidget: CategoryScreen(
-                            pageType: pageType,
-                            category: _tempCategoryData[index],
-                            categorys: _tempCategoryData,
-                          ),
-                        );
+                        if (isAnimStop)
+                          changeAnim(
+                            size: size,
+                            changePageType: pageType,
+                            changeWidget: CategoryScreen(
+                              pageType: pageType,
+                              category: _tempCategoryData[index],
+                              categorys: _tempCategoryData,
+                            ),
+                          );
                       },
                       child: Container(
                         padding: const EdgeInsets.all(20.0),
@@ -207,28 +214,35 @@ class _MainScreenState extends BlogState<MainScreen> {
         List.generate(
           _tempCategoryData.length,
           (index) => () {
-            changeAnim(
-              size: size,
-              changePageType: pageType,
-              changeWidget: CategoryScreen(
-                pageType: pageType,
-                category: _tempCategoryData[index],
-                categorys: _tempCategoryData,
-              ),
-            );
+            if (isAnimStop)
+              changeAnim(
+                size: size,
+                changePageType: pageType,
+                changeWidget: CategoryScreen(
+                  pageType: pageType,
+                  category: _tempCategoryData[index],
+                  categorys: _tempCategoryData,
+                ),
+              );
           },
         ),
       ),
       pageType: pageType,
-      myProfile: () => changeAnim(
-        size: size,
-        changePageType: pageType,
-      ),
-      changeProfile: () => changeAnim(
-        size: size,
-        changePageType:
-            pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
-      ),
+      myProfile: () {
+        if (isAnimStop)
+          changeAnim(
+            size: size,
+            changePageType: pageType,
+          );
+      },
+      changeProfile: () {
+        if (isAnimStop)
+          changeAnim(
+            size: size,
+            changePageType:
+                pageType == PAGE_TYPE.BEACH ? PAGE_TYPE.SEA : PAGE_TYPE.BEACH,
+          );
+      },
     );
   }
 }

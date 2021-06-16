@@ -7,15 +7,19 @@ import 'package:blog/widget/web_fomatter.dart';
 import 'package:flutter/material.dart';
 
 enum VIEW_TYPE { WEB, TABLET, MOBILE }
+enum ANIMATION_STATE { STOP, START_ANIM_RUNNING, CHANGE_ANIM_RUNNING }
 
 abstract class BlogState<T extends StatefulWidget> extends State<T> {
   abstract MainBackground bodyBg;
   abstract double waveHeight;
   abstract PAGE_TYPE pageType;
+  abstract Duration bgAnimDuration;
+
   VIEW_TYPE viewType = VIEW_TYPE.WEB;
   bool initSet = false;
-  // debug 용
-  final bool _isWeb = identical(0, 0.0);
+  ANIMATION_STATE _bgAnimState = ANIMATION_STATE.STOP;
+  PAGE_TYPE _changePageType = PAGE_TYPE.BEACH;
+  Widget? _changeWidget;
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +28,17 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
       initSet = true;
       initSetting(context, size);
     }
-    // if (_isWeb)
-    //   return WebFomatter(
-    //     bodyWidget: buildWidget(context, size),
-    //     drawerWidget: buildDrawer(context, size),
-    //   );
+
+    bodyBg = MainBackground(
+        waveHeight: waveHeight,
+        pageType: pageType,
+        animationDuration: bgAnimDuration,
+        onEnd: () {
+          var oldAnimState = _bgAnimState;
+          _bgAnimState = ANIMATION_STATE.STOP;
+          bgAnimationOnEnd(oldAnimState, _changePageType, _changeWidget);
+        });
+
     if (size.width < MOBILE_WIDTH)
       viewType = VIEW_TYPE.MOBILE;
     else if (size.width > WEB_WIDTH)
@@ -66,6 +76,16 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
     }
   }
 
+  // Animation State 가져오기
+  ANIMATION_STATE get currentAnimationState => _bgAnimState;
+  // todo: 애니메이션이 멈춰있는지 확인 (애니메이션 구동이 원활하게 될 때 삭제)
+  bool get isAnimStop => _bgAnimState == ANIMATION_STATE.STOP;
+
+  // Animation OnEnd
+  @protected
+  void bgAnimationOnEnd(ANIMATION_STATE oldState, PAGE_TYPE changePageType,
+      Widget? changeWidget) {}
+
   /// Initialized Setting
   @protected
   void initSetting(BuildContext context, Size size);
@@ -80,13 +100,21 @@ abstract class BlogState<T extends StatefulWidget> extends State<T> {
 
   /// 시작 Animation
   @protected
-  Future<void> startAnim({required Size size});
+  @mustCallSuper
+  Future<void> startAnim({required Size size}) async {
+    _bgAnimState = ANIMATION_STATE.START_ANIM_RUNNING;
+  }
 
   /// 변환 Animation 및 페이지 전환 역할
   @protected
+  @mustCallSuper
   Future<void> changeAnim({
     required Size size,
     required PAGE_TYPE changePageType,
     Widget? changeWidget = null,
-  });
+  }) async {
+    this._changePageType = changePageType;
+    this._changeWidget = changeWidget;
+    _bgAnimState = ANIMATION_STATE.CHANGE_ANIM_RUNNING;
+  }
 }

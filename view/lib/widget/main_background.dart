@@ -8,12 +8,15 @@ class MainBackground extends StatelessWidget {
   final double waveHeight;
   final PAGE_TYPE pageType;
   final Duration animationDuration;
+  // Anomation 종료 시 호출
+  final Function() onEnd;
 
   MainBackground({
     Key? key,
     required this.waveHeight,
     required this.pageType,
     required this.animationDuration,
+    required this.onEnd,
   }) : super(key: key);
 
   @override
@@ -37,6 +40,7 @@ class MainBackground extends StatelessWidget {
               curve: Curves.decelerate,
               duration: animationDuration,
               height: waveHeight,
+              onEnd: index == 0 ? onEnd : null, // Animation end를 1번만 호출시키기 위함
               child: RotatedBox(
                 quarterTurns: pageType == PAGE_TYPE.BEACH ? 2 : 0,
                 child: WaveAnimation(

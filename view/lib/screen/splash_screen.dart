@@ -23,13 +23,15 @@ class _SplashScreenState extends BlogState {
   @override
   late double waveHeight;
 
-  bool isChangeAnimRun = false;
+  @override
+  late Duration bgAnimDuration;
 
   @override
   void initState() {
     super.initState();
     pageType = PAGE_TYPE.BEACH;
     waveHeight = 0;
+    bgAnimDuration = Duration(milliseconds: 800);
     // SharedPreference 초기화
     //Comm_Prefs.prefs = await Comm_Prefs.newInstance();
   }
@@ -37,45 +39,44 @@ class _SplashScreenState extends BlogState {
   // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
   @override
   Future<void> startAnim({required Size size}) async {
-    if (!isChangeAnimRun) {
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() {
-        waveHeight = size.height / 2;
-      });
-    }
+    super.startAnim(size: size);
+
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() {
+      waveHeight = size.height / 2;
+    });
   }
 
   @override
+  @mustCallSuper
   Future<void> changeAnim({
     required Size size,
     required PAGE_TYPE changePageType,
     Widget? changeWidget = null,
   }) async {
-    isChangeAnimRun = true;
+    super.changeAnim(size: size, changePageType: changePageType);
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
 
     setState(() {
       waveHeight = changeHeight;
     });
+  }
 
-    await Future.delayed(Duration(milliseconds: 800));
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(pageType: changePageType),
-        ));
+  @override
+  void bgAnimationOnEnd(ANIMATION_STATE oldState, PAGE_TYPE changePageType,
+      Widget? changeWidget) {
+    if (oldState == ANIMATION_STATE.CHANGE_ANIM_RUNNING) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(pageType: changePageType),
+          ));
+    }
   }
 
   @override
   Widget buildWidget(BuildContext context, Size size) {
-    if (waveHeight == 0) startAnim(size: size);
-    bodyBg = MainBackground(
-      waveHeight: waveHeight,
-      pageType: pageType,
-      animationDuration: Duration(milliseconds: 800),
-    );
-
     return Scaffold(
       body: Container(
         child: Stack(
@@ -87,7 +88,8 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  changeAnim(size: size, changePageType: PAGE_TYPE.SEA);
+                  if (isAnimStop)
+                    changeAnim(size: size, changePageType: PAGE_TYPE.SEA);
                 },
                 child: CircleAvatar(
                   radius: 100,
@@ -118,7 +120,8 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  changeAnim(size: size, changePageType: PAGE_TYPE.BEACH);
+                  if (currentAnimationState == ANIMATION_STATE.STOP)
+                    changeAnim(size: size, changePageType: PAGE_TYPE.BEACH);
                 },
                 child: CircleAvatar(
                   radius: 100,
@@ -150,7 +153,9 @@ class _SplashScreenState extends BlogState {
   }
 
   @override
-  void initSetting(BuildContext context, Size size) {}
+  void initSetting(BuildContext context, Size size) {
+    startAnim(size: size);
+  }
 
   @override
   Widget? buildDrawer(BuildContext context, Size size) => null;
