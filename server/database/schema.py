@@ -1,6 +1,8 @@
 from os import path as op
 from sys import path as sp
 
+from sqlalchemy.sql.expression import null
+
 sp.append(op.dirname(op.dirname(__file__)))
 
 from sqlalchemy import (
@@ -13,7 +15,7 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
 )
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, backref, relationship
 
 from database.conn import Base, db
 
@@ -73,8 +75,6 @@ class BaseMixin:
         for key, val in kwargs.items():
             col = getattr(cls, key)
             query = query.filter(col == val)
-        print(query.count(),
-              "$)!@(*#&)(*^$)(@!*^#)(@*&#)(!@*^$)(!@*&#)(!@*^#)(!@*$&")
         if query.count() > 1:
             raise Exception(
                 "Only one row is supposed to be returned, but got more than one."
@@ -183,21 +183,14 @@ class Users(Base, BaseMixin):
     user_name = Column(String(40), nullable=False, primary_key=True)
     password = Column(String(200), nullable=False)
 
-
-class Catagory(Base, BaseMixin):
-    #카테고리 테이블
-    __tablename__ = "Catagory"
-    catagory_name = Column(String(200), nullable=False)
+    user_catagory = relationship("UsersCatagory", backref="user")
 
 
 class UsersCatagory(Base, BaseMixin):
     #유저 카테고리 테이블
     __tablename__ = "UsersCatagory"
+    catagory_name = Column(String(200), nullable=False)
     user_id = Column(Integer, ForeignKey("Users.id"), primary_key=True)
-    user_name = Column(String(40),
-                       ForeignKey("Users.user_name"),
-                       primary_key=True)
-    catagory_name = Column(String(200), ForeignKey("Catagory.catagory_name"))
 
 
 # class Posts(Base, BaseMixin):

@@ -7,6 +7,7 @@ from dataclasses import asdict
 
 import uvicorn
 from fastapi import FastAPI, Depends
+from fastapi.security import APIKeyHeader
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -15,6 +16,8 @@ from database.conn import db, Base
 from routes import index, auth
 from middlewares.trusted_hosts import TrustedHostMiddleware
 from middlewares.token_validator import access_control
+
+API_KEY_HEADER = APIKeyHeader(name="Authorization", auto_error=False)
 
 
 def create_app():

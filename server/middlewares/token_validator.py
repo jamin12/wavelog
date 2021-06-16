@@ -10,11 +10,12 @@ import re
 import sqlalchemy.exc
 
 from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from utils.date_utils import D
 from utils.logger import api_logger
 from common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX
-from errors.exceptions import APIException, SqlFailureEx
+from errors import exceptions as ex
 
 
 async def access_control(request: Request, call_next):
@@ -32,11 +33,33 @@ async def access_control(request: Request, call_next):
     cookies = request.cookies
 
     url = request.url.path
+    #url 패턴 체크
     if await url_pattern_check(url,
                                EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
         response = await call_next(request)
-        await api_logger(request=request, response=response)
+        if url != '/':
+            await api_logger(request=request, response=response)
         return response
+
+    try:
+        if url.startswith('/api/useract'):
+            #토큰 체크
+            if "authorization" in headers.keys():
+                key = headers.get("Authorization")
+
+            else:
+                raise ex.NotAuthorized()
+
+    except Exception as e:
+        error = await exception_handler(e)
+        error_dict = dict(status=error.status_code,
+                          msg=error.msg,
+                          detail=error.detail,
+                          code=error.code)
+        response = JSONResponse(status_code=error.status_code,
+                                content=error_dict)
+        await api_logger(request=request, error=error)
+    return response
 
 
 async def url_pattern_check(path, pattern):
@@ -47,9 +70,8 @@ async def url_pattern_check(path, pattern):
 
 
 async def exception_handler(error: Exception):
-    print(error)
     if isinstance(error, sqlalchemy.exc.OperationalError):
-        error = SqlFailureEx(ex=error)
-    if not isinstance(error, APIException):
-        error = APIException(ex=error, detail=str(error))
+        error = ex.SqlFailureEx(ex=error)
+    if not isinstance(error, ex.APIException):
+        error = ex.APIException(ex=error, detail=str(error))
     return error
