@@ -18,13 +18,14 @@ blog project initialized
     <li>게시글 추가 / 수정 페이지 구현</li>
     <li>게시글 페이지 구현</li>
     <li>서버 연동</li>
-    <li>Performance 조정</li>
+    <li>Performance 개선</li>
+    <li>일단 전부 완성 후 웹에 맞게 대규모 코드 리뉴얼 진행</li>
 </ol>
 
 # VIEW 문제 사항
 <ol>
     <li>모바일 사이즈 화면 사이즈에서는 SVG에 색상이 들어가지 않음</li>
-    <li>Web 및 Android의 기본 탑재된 뒤로가기 시 View 가 제대로 작동하지 않으며 작동한다 하더라도 다음번 부터는 뒤로가기 기능이 손실됨<li>
+    <li>Web 및 Android의 기본 탑재된 뒤로가기 시 View 가 제대로 작동하지 않으며 작동한다 하더라도 다음번 부터는 뒤로가기 기능이 손실됨</li>
 </ol>
 
 # VIEW 수정 완료 사항

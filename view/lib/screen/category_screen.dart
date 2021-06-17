@@ -61,7 +61,7 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
     // todo: 여기서 리스트 추가
     setState(() {
       double changeHeight =
-          pageType == PAGE_TYPE.BEACH ? size.height * 0.38 : size.height * 0.62;
+          pageType == PAGE_TYPE.BEACH ? size.height * 0.2 : size.height * 0.8;
       waveHeight = changeHeight;
     });
   }
@@ -101,7 +101,6 @@ class _CategoryScreenState extends BlogState<CategoryScreen> {
           ),
         );
     }
-    super.bgAnimationOnEnd(oldState, changePageType, changeWidget);
   }
 
   @override

@@ -54,7 +54,8 @@ class _MainScreenState extends BlogState<MainScreen> {
     // todo: 여기서 리스트 추가
     setState(() {
       double changeHeight =
-          pageType == PAGE_TYPE.BEACH ? size.height * 0.38 : size.height * 0.62;
+          pageType == PAGE_TYPE.BEACH ? size.height * 0.2 : size.height * 0.8;
+      // 0.38 / 0.62
       waveHeight = changeHeight;
     });
   }
