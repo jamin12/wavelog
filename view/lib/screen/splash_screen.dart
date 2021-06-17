@@ -120,7 +120,7 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  if (currentAnimationState == ANIMATION_STATE.STOP)
+                  if (isAnimStop)
                     changeAnim(size: size, changePageType: PAGE_TYPE.BEACH);
                 },
                 child: CircleAvatar(

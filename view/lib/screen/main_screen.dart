@@ -65,7 +65,8 @@ class _MainScreenState extends BlogState<MainScreen> {
     required PAGE_TYPE changePageType,
     Widget? changeWidget = null,
   }) async {
-    super.changeAnim(size: size, changePageType: changePageType);
+    super.changeAnim(
+        size: size, changePageType: changePageType, changeWidget: changeWidget);
     // todo: 여기서 리스트 제거
     double changeHeight =
         changePageType == PAGE_TYPE.BEACH ? 0 : size.height + 50;
