@@ -33,6 +33,7 @@ async def access_control(request: Request, call_next):
     cookies = request.cookies
 
     url = request.url.path
+
     #url 패턴 체크
     if await url_pattern_check(url,
                                EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
@@ -42,6 +43,8 @@ async def access_control(request: Request, call_next):
         return response
 
     try:
+        if url.startswith('/favicon.ico'):
+            raise ex.SqlFailureEx()
         if url.startswith('/api/useract'):
             #토큰 체크
             if "authorization" in headers.keys():

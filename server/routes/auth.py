@@ -38,11 +38,15 @@ async def register(reg_info: UserRegister,
     """
     루트 사용자를 위한 회원가입 API\n
     """
+    is_exist = await user_exist(reg_info.user_name)
     if not reg_info.user_name or not reg_info.password:
         #이름이나 비밀번호를 전송하지 않았을 경우
         return JSONResponse(
             status_code=400,
             content=dict(msg="user name and password must be provided"))
+    if is_exist:
+        #이미 아이디가 있으면 오류
+        return JSONResponse(status_code=400, content=dict(msg="USER_EXISTS"))
     #비밀번호 해시화
     hash_pw = bcrypt.hashpw(reg_info.password.encode("utf-8"),
                             bcrypt.gensalt())
@@ -51,7 +55,7 @@ async def register(reg_info: UserRegister,
     new_user = Users.create(
         session,
         auto_commit=True,
-        user_name=reg_info.user_name,
+        # user_name=reg_info.user_name,
         password=hash_pw,
     )
 
@@ -79,8 +83,7 @@ async def login(user_info: UserRegister):
             content=dict(msg="user_name or password must be provided"))
     token = dict(
         Authorization=
-        f"Bearer {create_access_token(data=UserOut.from_orm(user).dict(exclude={'password'}),)}"
-    )
+        f"Bearer {create_access_token(data=UserOut.from_orm(user).dict(),)}")
     return token
 
 

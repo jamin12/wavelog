@@ -180,7 +180,7 @@ class BaseMixin:
 class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
-    user_name = Column(String(40), nullable=False, primary_key=True)
+    user_name = Column(String(40), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
 
     user_catagory = relationship("UsersCatagory", backref="user")

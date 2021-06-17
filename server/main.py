@@ -1,5 +1,5 @@
 from os import path as op
-from sys import path as sp
+from sys import path as sp, prefix
 
 sp.append(op.dirname(__file__))
 
@@ -13,7 +13,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from common.config import conf
 from database.conn import db, Base
-from routes import index, auth
+from routes import index, auth, useract
 from middlewares.trusted_hosts import TrustedHostMiddleware
 from middlewares.token_validator import access_control
 
@@ -49,6 +49,7 @@ def create_app():
     # 라우터 정의
     app.include_router(index.router)
     app.include_router(auth.router, tags=["Authentication"], prefix="/api")
+    app.include_router(useract.router, tags=["UserAct"], prefix="/api")
     return app
 
 
