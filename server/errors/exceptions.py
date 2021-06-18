@@ -53,6 +53,28 @@ class NotAuthorized(APIException):
         )
 
 
+class TokenExpiredEx(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_400,
+            msg=f"세션이 만료되어 로그아웃 되었습니다.",
+            detail="Token Expired",
+            code=f"{StatusCode.HTTP_400}{'1'.zfill(4)}",
+            ex=ex,
+        )
+
+
+class TokenDecodeEx(APIException):
+    def __init__(self, ex: Exception = None):
+        super().__init__(
+            status_code=StatusCode.HTTP_400,
+            msg=f"비정상적인 접근입니다.",
+            detail="Token has been compromised.",
+            code=f"{StatusCode.HTTP_400}{'2'.zfill(4)}",
+            ex=ex,
+        )
+
+
 class SqlFailureEx(APIException):
     def __init__(self, ex: Exception = None):
         super().__init__(

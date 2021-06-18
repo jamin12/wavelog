@@ -21,6 +21,7 @@ class Token(BaseModel):
 
 #유저 아우풋
 class UserOut(BaseModel):
+    id: int = None
     user_name: str = None
 
     class Config:

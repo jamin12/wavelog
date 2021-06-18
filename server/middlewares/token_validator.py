@@ -4,23 +4,26 @@ from sys import path as sp
 sp.append(op.dirname(op.dirname(__file__)))
 
 import time
-
+import jwt
 import re
 
 import sqlalchemy.exc
+from jwt.exceptions import ExpiredSignatureError, DecodeError
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from utils.date_utils import D
 from utils.logger import api_logger
-from common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX
+from common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX, JWT_ALGORITHM, JWT_SECRET
 from errors import exceptions as ex
+from database.schema import db
 
 
 async def access_control(request: Request, call_next):
     request.state.req_time = D.datetime()
     request.state.start = time.time()
+    #에러 로깅 변수
     request.state.inspect = None
     request.state.user = None
     request.state.service = None
@@ -46,9 +49,13 @@ async def access_control(request: Request, call_next):
         if url.startswith('/favicon.ico'):
             raise ex.SqlFailureEx()
         if url.startswith('/api/useract'):
+            print(headers.keys())
             #토큰 체크
             if "authorization" in headers.keys():
-                key = headers.get("Authorization")
+                token_info = await token_decode(headers.get("Authorization"))
+                qs = str(request.query_params)
+                qs_list = qs.split("&")
+                session = next(db.session())
 
             else:
                 raise ex.NotAuthorized()
@@ -78,3 +85,20 @@ async def exception_handler(error: Exception):
     if not isinstance(error, ex.APIException):
         error = ex.APIException(ex=error, detail=str(error))
     return error
+
+
+async def token_decode(access_token):
+    """
+    :param access_token:
+    :return:
+    """
+    try:
+        access_token = access_token.replace("Bearer ", "")
+        payload = jwt.decode(access_token,
+                             key=JWT_SECRET,
+                             algorithms=[JWT_ALGORITHM])
+    except ExpiredSignatureError:
+        raise ex.TokenExpiredEx()
+    except DecodeError:
+        raise ex.TokenDecodeEx()
+    return payload

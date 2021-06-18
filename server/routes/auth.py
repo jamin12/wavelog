@@ -55,7 +55,7 @@ async def register(reg_info: UserRegister,
     new_user = Users.create(
         session,
         auto_commit=True,
-        # user_name=reg_info.user_name,
+        user_name=reg_info.user_name,
         password=hash_pw,
     )
 
@@ -74,6 +74,7 @@ async def login(user_info: UserRegister):
     if not is_exist:
         return JSONResponse(status_code=400, content=dict(msg="No Match User"))
     user = Users.get(user_name=user_info.user_name)
+    print(user.id)
     is_verified = bcrypt.checkpw(user_info.password.encode("utf-8"),
                                  user.password.encode("utf-8"))
     #사용자 이름이 없을 경우

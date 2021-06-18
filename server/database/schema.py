@@ -177,6 +177,7 @@ class BaseMixin:
             self._session.flush()
 
 
+#TODO 아니 왜 primary key 설정하면 sql문에 안들어가냐?? 
 class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
