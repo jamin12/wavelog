@@ -6,8 +6,16 @@ Kyoung-Min
 blog project initialized
 2021-05-12
 
+# 이전 작업에 대한 내용
+지금 뭘 하고 있는지 잘 모르겠다
+아무래도 Web에 대한 기초적인 강의를 정독하고
+그 후 provider에 대한 기초적인 강의 듣고
+다시 작업을 진행해야 맞는 것 같다
+https://www.youtube.com/watch?v=rhq5yImWdBw&list=PLIKnSA4GMR4O9uTZvKLq9UWx3I8biurBr&index=9
+여기 링크를 남긴다
 # VIEW 해야할 일
 <ol>
+    <li>Splash Screen에서 사용자 클릭 시 선택되지 않은 사용자 사라지는 애니메이션 처리</li>
     <li>로그인 기능 생성
         <ul>
             <li>로그인 커스텀 팝업 디자인 및 구현</li>
@@ -20,6 +28,7 @@ blog project initialized
     <li>서버 연동</li>
     <li>Performance 개선</li>
     <li>일단 전부 완성 후 웹에 맞게 대규모 코드 리뉴얼 진행</li>
+    <li>코드 리뉴얼 단계에서 Provider or GetX 적용</li>
 </ol>
 
 # VIEW 문제 사항

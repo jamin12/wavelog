@@ -2,25 +2,46 @@ import 'package:flutter/material.dart';
 
 class BeanItem {
   // 키값
-  final String id;
+  String id;
   // 제목
-  final String title;
+  String title;
   // 아이템 색상
-  final Color color;
+  Color color;
   // 작성자
-  final String writer;
+  String writer;
   // 읽은 수
-  final int views;
+  int views;
   // 내용
-  final String contents;
+  String contents;
   // 작성날짜
-  final String writeDate;
+  String writeDate;
   BeanItem(
-      {required this.id,
+      {this.id = '',
       this.title = '',
       this.color = Colors.red,
       this.writer = '',
       this.views = 0,
       this.contents = '',
-      this.writeDate = ''});
+      this.writeDate = '',
+      String? value}) {
+    if (value != null) {
+      List<String> items = value.split(tag);
+      this.id = items.first;
+      this.title = items[1];
+      this.color = Color(int.parse(items[2]));
+      this.writer = items[3];
+      this.views = int.parse(items[4]);
+      this.contents = items[5];
+      this.writeDate = items.last;
+    }
+  }
+
+  static String tag = '<kmeoung>';
+
+  String get string {
+    String toString = '';
+    toString =
+        '$id$tag$title$tag${color.value}$tag$writer$tag$views$tag$contents$tag$writeDate';
+    return toString;
+  }
 }

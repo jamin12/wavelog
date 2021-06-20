@@ -6,8 +6,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class MainDrawer extends StatelessWidget {
   final PAGE_TYPE pageType;
+  // Item , onTab() (카테고리 아이템 , 각 카테고리 클릭 시 이벤트)
   final Map<BeanItem, Function()>? drawers;
+  // 상대방 Profile 클릭 시 이벤트
   final Function() changeProfile;
+  // 내 Profile 클릭 시 이벤트 (main_screen 페이지로 이동)
   final Function() myProfile;
 
   const MainDrawer({

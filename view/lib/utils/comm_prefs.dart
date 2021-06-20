@@ -9,14 +9,14 @@ class Comm_Prefs {
     return prefs;
   }
 
-  static getInstance() async {
+  static Future<SharedPreferences?> getInstance() async {
     if (prefs == null) prefs = await newInstance();
     return prefs;
   }
 
   // 로그인 여부 가져오기
   static getIsLogin() {
-    return prefs!.getBool(Comm_Prefs_Params.isLogin);
+    return prefs!.getBool(Comm_Prefs_Params.isLogin) ?? false;
   }
 
   // 로그인 여부 저장
@@ -24,5 +24,15 @@ class Comm_Prefs {
     return prefs!
         .setBool(Comm_Prefs_Params.isLogin, value)
         .then((bool success) => success);
+  }
+
+  static getCategorys() {
+    return prefs!.getStringList(Comm_Prefs_Params.categorys);
+  }
+
+  static setCategorys(List<String> values) {
+    return prefs!
+        .setStringList(Comm_Prefs_Params.categorys, values)
+        .then((success) => success);
   }
 }

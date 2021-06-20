@@ -2,6 +2,7 @@ import 'package:blog/const.dart';
 import 'package:blog/main.dart';
 import 'package:blog/model/bean_item.dart';
 import 'package:blog/screen/category_screen.dart';
+import 'package:blog/utils/comm_prefs.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:blog/widget/main_background.dart';
 import 'package:blog/widget/main_drawer.dart';
@@ -44,6 +45,13 @@ class _MainScreenState extends BlogState<MainScreen> {
           title: '$index'),
     );
     bgAnimDuration = Duration(milliseconds: 500);
+
+    // todo : 카테고리를 어떻게 계속 데이터로 들고 갈 수 있을까???????
+    List<String> temp = [];
+    _tempCategoryData.forEach((element) {
+      temp.add(element.string);
+    });
+    Comm_Prefs.setCategorys(temp);
   }
 
   @override
@@ -210,11 +218,20 @@ class _MainScreenState extends BlogState<MainScreen> {
 
   @override
   Widget? buildDrawer(BuildContext context, Size size) {
+    List<BeanItem> categorys = [];
+
+    if (Comm_Prefs.getCategorys() != null) {
+      List<String> saveCategorys = Comm_Prefs.getCategorys();
+      saveCategorys.forEach((String element) {
+        categorys.add(BeanItem(value: element));
+      });
+    }
+
     return MainDrawer(
       drawers: Map.fromIterables(
-        _tempCategoryData,
+        categorys,
         List.generate(
-          _tempCategoryData.length,
+          categorys.length,
           (index) => () {
             if (isAnimStop)
               changeAnim(
@@ -222,8 +239,8 @@ class _MainScreenState extends BlogState<MainScreen> {
                 changePageType: pageType,
                 changeWidget: CategoryScreen(
                   pageType: pageType,
-                  category: _tempCategoryData[index],
-                  categorys: _tempCategoryData,
+                  category: categorys[index],
+                  categorys: categorys,
                 ),
               );
           },

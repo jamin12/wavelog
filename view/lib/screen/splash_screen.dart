@@ -1,6 +1,7 @@
 import 'package:blog/const.dart';
 import 'package:blog/main.dart';
 import 'package:blog/screen/main_screen.dart';
+import 'package:blog/utils/comm_prefs.dart';
 import 'package:blog/widget/main_background.dart';
 import 'package:blog/widget/blog_state.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,11 @@ class _SplashScreenState extends BlogState {
   @override
   late Duration bgAnimDuration;
 
+  /// SharedPreference 초기화
+  Future<void> initSharedPreference() async {
+    Comm_Prefs.prefs = await Comm_Prefs.getInstance();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +39,7 @@ class _SplashScreenState extends BlogState {
     waveHeight = 0;
     bgAnimDuration = Duration(milliseconds: 800);
     // SharedPreference 초기화
-    //Comm_Prefs.prefs = await Comm_Prefs.newInstance();
+    initSharedPreference();
   }
 
   // 여기 사이즈를 안 받고 화면 중간에 오게 가능할까?
@@ -88,7 +94,8 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  if (isAnimStop)
+                  if (currentAnimationState !=
+                      ANIMATION_STATE.CHANGE_ANIM_RUNNING)
                     changeAnim(size: size, changePageType: PAGE_TYPE.SEA);
                 },
                 child: CircleAvatar(
@@ -120,7 +127,8 @@ class _SplashScreenState extends BlogState {
               right: 0,
               child: GestureDetector(
                 onTap: () {
-                  if (isAnimStop)
+                  if (currentAnimationState !=
+                      ANIMATION_STATE.CHANGE_ANIM_RUNNING)
                     changeAnim(size: size, changePageType: PAGE_TYPE.BEACH);
                 },
                 child: CircleAvatar(
