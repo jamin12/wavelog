@@ -1,10 +1,5 @@
-from datetime import datetime
-from enum import Enum
-
 from pydantic import Field
 from pydantic.main import BaseModel
-from pydantic.networks import EmailStr, IPvAnyAddress
-from sqlalchemy.sql.base import NO_ARG
 
 
 #유저 인풋
@@ -28,6 +23,15 @@ class UserOut(BaseModel):
         orm_mode = True
 
 
+#유저 토큰
+class UserToken(BaseModel):
+    id: int = None
+    user_name: str = None
+
+    class Config:
+        orm_mode = True
+
+
 #유저 리스트 가져오기
 class GetUserList(BaseModel):
     id: int = None
@@ -40,7 +44,31 @@ class GetUserList(BaseModel):
 #카테고리 리스트 가져오기
 class CatagoryList(BaseModel):
     catagory_name: str = None
+    catagory_color: str = None
     user_name: str = None
 
     class Config:
         orm_mode = True
+
+
+#카테고리 레지스터
+class CatagoryRegister(BaseModel):
+    catagory_name: str = None
+    catagory_color: str = None
+
+
+#카테고리 삭제
+class CatagoryDelete(BaseModel):
+    catagory_name: str = None
+
+
+#메인 페이지 뷰
+class Mainpage(BaseModel):
+    user_name: str = None
+    catagory_name: str = None
+    catagory_color: str = None
+
+
+#메시지 OK
+class MessageOk(BaseModel):
+    message: str = Field(default="OK")

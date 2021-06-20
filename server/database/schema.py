@@ -1,7 +1,7 @@
 from os import path as op
 from sys import path as sp
 
-from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.expression import false, null
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -21,7 +21,6 @@ from database.conn import Base, db
 
 
 class BaseMixin:
-    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
     updated_at = Column(DateTime,
                         nullable=False,
@@ -36,7 +35,7 @@ class BaseMixin:
     def all_columns(self):
         return [
             c for c in self.__table__.columns
-            if c.primary_key is False and c.name != "created_at"
+            if c.name != "id" and c.name != "created_at"
         ]
 
     def __hash__(self):
@@ -98,12 +97,24 @@ class BaseMixin:
             if len(key) > 2:
                 raise Exception("No 2 more dunders")
             col = getattr(cls, key[0])
-            if len(key) == 1: cond.append((col == val))
-            elif len(key) == 2 and key[1] == 'gt': cond.append((col > val))
-            elif len(key) == 2 and key[1] == 'gte': cond.append((col >= val))
-            elif len(key) == 2 and key[1] == 'lt': cond.append((col < val))
-            elif len(key) == 2 and key[1] == 'lte': cond.append((col <= val))
-            elif len(key) == 2 and key[1] == 'in': cond.append((col.in_(val)))
+            if len(key) == 1:
+                cond.append((col == val))
+                #gt 보다 큰 조건
+            elif len(key) == 2 and key[1] == 'gt':
+                cond.append((col > val))
+                #gte 보다 크거나 같은 조건
+            elif len(key) == 2 and key[1] == 'gte':
+                cond.append((col >= val))
+                #lt 보다 작은 조건
+            elif len(key) == 2 and key[1] == 'lt':
+                cond.append((col < val))
+                #lte 보다 작거나 같은 조건
+            elif len(key) == 2 and key[1] == 'lte':
+                cond.append((col <= val))
+                #in [1,2,3]등등 조건
+            elif len(key) == 2 and key[1] == 'in':
+                cond.append((col.in_(val)))
+            #예시 user.filter(id__gt = 3)
         obj = cls()
         if session:
             obj._session = session
@@ -160,7 +171,6 @@ class BaseMixin:
             self._session.commit()
 
     def all(self):
-        print(self.served)
         result = self._q.all()
         self.close()
         return result
@@ -177,21 +187,25 @@ class BaseMixin:
             self._session.flush()
 
 
-#TODO 아니 왜 primary key 설정하면 sql문에 안들어가냐?? 
 class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
+    id = Column(Integer, primary_key=True, index=True)
     user_name = Column(String(40), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
 
-    user_catagory = relationship("UsersCatagory", backref="user")
+    user_catagory = relationship("UserCatagory", backref="user")
 
 
-class UsersCatagory(Base, BaseMixin):
+class UserCatagory(Base, BaseMixin):
     #유저 카테고리 테이블
-    __tablename__ = "UsersCatagory"
-    catagory_name = Column(String(200), nullable=False)
-    user_id = Column(Integer, ForeignKey("Users.id"), primary_key=True)
+    __tablename__ = "UserCatagory"
+    catagory_name = Column(String(200), nullable=False, primary_key=True)
+    catagory_color = Column(String(45), nullable=True, default="red")
+    user_id = Column(Integer,
+                     ForeignKey("Users.id"),
+                     primary_key=True,
+                     nullable=False)
 
 
 # class Posts(Base, BaseMixin):

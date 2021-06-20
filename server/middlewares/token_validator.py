@@ -1,8 +1,11 @@
 from os import path as op
 from sys import path as sp
 
+from sqlalchemy.orm import session
+
 sp.append(op.dirname(op.dirname(__file__)))
 
+import PIL.Image as pilimg
 import time
 import jwt
 import re
@@ -18,6 +21,7 @@ from utils.logger import api_logger
 from common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX, JWT_ALGORITHM, JWT_SECRET
 from errors import exceptions as ex
 from database.schema import db
+import model as m
 
 
 async def access_control(request: Request, call_next):
@@ -49,13 +53,15 @@ async def access_control(request: Request, call_next):
         if url.startswith('/favicon.ico'):
             raise ex.SqlFailureEx()
         if url.startswith('/api/useract'):
-            print(headers.keys())
             #토큰 체크
             if "authorization" in headers.keys():
                 token_info = await token_decode(headers.get("Authorization"))
-                qs = str(request.query_params)
-                qs_list = qs.split("&")
-                session = next(db.session())
+                print(token_info)
+                request.state.user = m.UserToken(**token_info)
+                # qs = str(request.query_params)
+                # qs_list = qs.split("&")
+                response = await call_next(request)
+                return response
 
             else:
                 raise ex.NotAuthorized()

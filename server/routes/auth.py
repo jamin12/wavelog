@@ -32,7 +32,7 @@ from common.consts import JWT_SECRET, JWT_ALGORITHM
 router = APIRouter(prefix="/auth")
 
 
-@router.post("/register/", status_code=201)
+@router.post("/register", status_code=201)
 async def register(reg_info: UserRegister,
                    session: Session = Depends(db.session)):
     """
@@ -50,7 +50,6 @@ async def register(reg_info: UserRegister,
     #비밀번호 해시화
     hash_pw = bcrypt.hashpw(reg_info.password.encode("utf-8"),
                             bcrypt.gensalt())
-    # print(hash_pw, "-----------------------------------")
     #새로운 유저 생성
     new_user = Users.create(
         session,
@@ -71,13 +70,13 @@ async def login(user_info: UserRegister):
         return JSONResponse(
             status_code=400,
             content=dict(msg="user_name or password must be provided"))
+    #사용자 이름이 없는 경우
     if not is_exist:
         return JSONResponse(status_code=400, content=dict(msg="No Match User"))
     user = Users.get(user_name=user_info.user_name)
-    print(user.id)
     is_verified = bcrypt.checkpw(user_info.password.encode("utf-8"),
                                  user.password.encode("utf-8"))
-    #사용자 이름이 없을 경우
+    #비밀번호 틀렸을 때
     if not is_verified:
         return JSONResponse(
             status_code=400,
