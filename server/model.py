@@ -41,14 +41,10 @@ class GetUserList(BaseModel):
         orm_mode = True
 
 
-#카테고리 리스트 가져오기
+#카테고리 리스트
 class CatagoryList(BaseModel):
     catagory_name: str = None
     catagory_color: str = None
-    user_name: str = None
-
-    class Config:
-        orm_mode = True
 
 
 #카테고리 레지스터

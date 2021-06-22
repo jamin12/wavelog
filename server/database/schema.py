@@ -1,5 +1,6 @@
 from os import path as op
 from sys import path as sp
+from typing import Text
 
 from sqlalchemy.sql.expression import false, null
 
@@ -11,8 +12,6 @@ from sqlalchemy import (
     String,
     DateTime,
     func,
-    Enum,
-    Boolean,
     ForeignKey,
 )
 from sqlalchemy.orm import Session, backref, relationship
@@ -21,6 +20,7 @@ from database.conn import Base, db
 
 
 class BaseMixin:
+    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
     updated_at = Column(DateTime,
                         nullable=False,
@@ -190,7 +190,6 @@ class BaseMixin:
 class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
-    id = Column(Integer, primary_key=True, index=True)
     user_name = Column(String(40), nullable=False, unique=True)
     password = Column(String(200), nullable=False)
 
@@ -200,23 +199,30 @@ class Users(Base, BaseMixin):
 class UserCatagory(Base, BaseMixin):
     #유저 카테고리 테이블
     __tablename__ = "UserCatagory"
-    catagory_name = Column(String(200), nullable=False, primary_key=True)
+    catagory_name = Column(String(200), nullable=False)
     catagory_color = Column(String(45), nullable=True, default="red")
     user_id = Column(Integer,
                      ForeignKey("Users.id"),
                      primary_key=True,
                      nullable=False)
 
+    user_post = relationship("UserPosts", backref="usercatagory")
 
-# class Posts(Base, BaseMixin):
-#     __tablename__ = "Posts"
-#     post_title = Column(String(100), nullable=False)
-#     post_body = Column(String(), nullable=False)
 
-# class UsersPosts(Base, BaseMixin):
-#     __tablename__ = "UsersPosts"
-#     user_id = Column(String(40), ForeignKey("Users.user_id"), primary_key=True)
-#     catagory_id = Column(Integer,
-#                          ForeignKey("UsersCatagory.id"),
-#                          primary_key=True)
-#     posts_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)
+class Posts(Base, BaseMixin):
+    __tablename__ = "Posts"
+    #게시물
+    post_title = Column(String(100), nullable=False)
+    post_body = Column(String(), nullable=False)
+
+    user_post = relationship("UserPosts", backref="Posts")
+
+
+class UserPosts(Base, BaseMixin):
+    __tablename__ = "UserPosts"
+    #유저 게시물
+    user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
+    catagory_id = Column(Integer,
+                         ForeignKey("UsersCatagory.id"),
+                         primary_key=True)
+    post_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)
