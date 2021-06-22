@@ -35,7 +35,7 @@ async def put_me(request: Request, my_name: str):
 @router.delete("/me")
 async def delete_me(request: Request):
     user = request.state.user
-    Users.filter(id=user.id).delete()
+    Users.filter(id=user.id).delete(auto_commit=True)
 
     return MessageOk()
 
@@ -54,10 +54,25 @@ async def create_catagory(request: Request,
                         **catagory_info.dict())
 
 
-@router.delete('/catagory/{catagoryname}')
+@router.put('/catagory/{catagoryname}/{catagoryrename}')
+async def put_catagory(request: Request, catagory_name: str,
+                       catagory_rename: str):
+    """
+    카테고리 이름 변경
+    """
+    user = request.state.user
+    update_catagory_name = UserCatagory.filter(user_id=user.id,
+                                               catagory_name=catagory_name)
+
+    # update_catagory_name.update(auto_commit=True,
+    #                             catagory_name=catagory_rename)
+
+
+@router.delete('/catagory/{CatagoryName}')
 async def delete_catagory(request: Request, catagory_name: str):
     user = request.state.user
 
-    UserCatagory.filter(catagory_name=catagory_name, user_id=user.id).delete()
+    UserCatagory.filter(catagory_name=catagory_name,
+                        user_id=user.id).delete(auto_commit=True)
 
     return MessageOk()

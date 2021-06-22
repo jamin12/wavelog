@@ -18,13 +18,18 @@ async def splash():
     ELB 상태 체크용 API
     :return:
     """
-    all_users = Users.filter(id__gt=0)
-    # print(all_users[0].user_catagory[0])
-    print(all_users.user_name)
-    # return all_users
+    all_users = Users.filter().all()
+    return all_users
 
 
 @router.get("/index", response_model=List[Mainpage])
 async def index():
-    all_users_catagory = UserCatagory.filter().all()
-    print(all_users_catagory[0].user)
+    all_users_catagory = UserCatagory.filter()._q
+    outputlist = []
+    outputdict = {}
+    for i in all_users_catagory:
+        outputdict["catagory_name"] = i.catagory_name
+        outputdict["catagory_color"] = i.catagory_color
+        outputdict["user_name"] = i.user.user_name
+        outputlist.append(outputdict.copy())
+    return outputlist
