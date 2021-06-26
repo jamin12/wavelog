@@ -12,7 +12,7 @@ import jwt
 import bcrypt
 from datetime import datetime, timedelta
 
-from model import UserRegister, Token, UserOut
+from model import UserRegister, Token, UserOut, MessageOk
 from database.conn import db
 from database.schema import Users
 from common.consts import JWT_SECRET, JWT_ALGORITHM
@@ -51,12 +51,14 @@ async def register(reg_info: UserRegister,
     hash_pw = bcrypt.hashpw(reg_info.password.encode("utf-8"),
                             bcrypt.gensalt())
     #새로운 유저 생성
-    new_user = Users.create(
+    Users.create(
         session,
         auto_commit=True,
         user_name=reg_info.user_name,
         password=hash_pw,
     )
+
+    return MessageOk()
 
 
 @router.post("/login", status_code=200, response_model=Token)

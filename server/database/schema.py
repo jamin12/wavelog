@@ -1,6 +1,8 @@
 from os import path as op
+import re
 from sys import path as sp
 from typing import Text
+from sqlalchemy.orm.relationships import foreign
 
 from sqlalchemy.sql.expression import false, null
 
@@ -209,20 +211,16 @@ class UserCatagory(Base, BaseMixin):
     user_post = relationship("UserPosts", backref="usercatagory")
 
 
-class Posts(Base, BaseMixin):
-    __tablename__ = "Posts"
+class UserPosts(Base, BaseMixin):
+    __tablename__ = "UserPosts"
     #게시물
     post_title = Column(String(100), nullable=False)
     post_body = Column(String(), nullable=False)
-
-    user_post = relationship("UserPosts", backref="Posts")
-
-
-class UserPosts(Base, BaseMixin):
-    __tablename__ = "UserPosts"
-    #유저 게시물
-    user_id = Column(Integer, ForeignKey("Users.user_id"), primary_key=True)
     catagory_id = Column(Integer,
-                         ForeignKey("UsersCatagory.id"),
-                         primary_key=True)
-    post_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)
+                         ForeignKey("UserCatagory.id"),
+                         primary_key=True,
+                         nullable=False)
+    # user_id = Column(Integer,
+    #                  ForeignKey("UserCatagory.user_id"),
+    #                  primary_key=True,
+    #                  nullable=False)
