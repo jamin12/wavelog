@@ -5,6 +5,7 @@ const BEACH_USER_NAME = 'Kyungmin Kang';
 
 const COLOR_BEACH = Color.fromARGB(255, 248, 244, 232);
 const COLOR_SEA = Color.fromARGB(255, 137, 205, 214);
+const COLOR_SEA2 = Color.fromARGB(255, 120, 150, 255);
 const COLOR_DARK = Color.fromARGB(255, 55, 63, 99);
 const COLOR_BACK = Color.fromARGB(255, 136, 201, 161);
 

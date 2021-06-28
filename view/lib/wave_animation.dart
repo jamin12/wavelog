@@ -1,17 +1,13 @@
 import 'dart:math';
 
+import 'package:blog/const.dart';
 import 'package:flutter/material.dart';
 
 class WaveAnimation extends StatefulWidget {
-  final Color waveColor;
   final int waveSpeed;
   final bool reverse;
 
-  const WaveAnimation(
-      {Key? key,
-      required this.waveColor,
-      this.waveSpeed = 2,
-      this.reverse = false})
+  const WaveAnimation({Key? key, this.waveSpeed = 2, this.reverse = false})
       : super(key: key);
   @override
   _WaveAnimationState createState() => _WaveAnimationState();
@@ -47,7 +43,14 @@ class _WaveAnimationState extends State<WaveAnimation>
       builder: (context, child) => ClipPath(
         clipper: WaveClipper(_animation.value),
         child: Container(
-          color: widget.waveColor,
+          color: COLOR_SEA,
+          // decoration: BoxDecoration(
+          //   gradient: LinearGradient(
+          //     colors: [COLOR_SEA, COLOR_SEA2],
+          //     begin: Alignment.topCenter,
+          //     end: Alignment.bottomCenter,
+          //   ),
+          // ),
         ),
       ),
     );
@@ -63,7 +66,7 @@ class WaveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     var p = Path();
     var points = <Offset>[];
-    for (var x = 0; x < size.width; x++) {
+    for (var x = 0; x <= size.width; x++) {
       points
           .add(Offset(x.toDouble(), WaveClipper.getYWithX(x, animationValue)));
     }
@@ -77,7 +80,7 @@ class WaveClipper extends CustomClipper<Path> {
   static const double _waveHeight = 50;
   static double getYWithX(int x, double animationValue) {
     // 0 ~ 2pi
-    return ((sin(animationValue + x * 0.01) + 1) / 2) * _waveHeight; // 0 ~ 1
+    return ((sin(animationValue + x * 0.04) + 1) / 4) * _waveHeight; // 0 ~ 1
   }
 
   @override

@@ -14,20 +14,23 @@ class WebLayout extends StatelessWidget {
 
     return Stack(
       children: [
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            height: double.infinity,
-            color: COLOR_BACK,
-          ),
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: COLOR_BACK,
         ), // 배경
         Center(
           child: Container(
             width: size.width / 3 * 2,
             height: size.height / 4 * 3,
-            child: ClipRRect(
+            child: Material(
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(30.0),
-              child: this.mainContents(context),
+              elevation: 50,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                child: this.mainContents(context),
+              ),
             ),
           ),
         )
