@@ -1,6 +1,5 @@
 from pydantic import Field
 from pydantic.main import BaseModel
-from sqlalchemy.sql.base import NO_ARG
 
 
 #유저 인풋
@@ -50,6 +49,7 @@ class CatagoryList(BaseModel):
 
 #카테고리 레지스터
 class CatagoryRegister(BaseModel):
+    parent_id: int = None
     catagory_name: str = None
     catagory_color: str = None
 
@@ -70,7 +70,6 @@ class Mainpage(BaseModel):
 class PostRegister(BaseModel):
     post_title: str = None
     post_body: str = None
-    
 
 
 #메시지 OK

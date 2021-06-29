@@ -1,7 +1,7 @@
 from os import path as op
 import re
 from sys import path as sp
-from typing import Text
+from typing import ClassVar, Text
 from sqlalchemy.orm.relationships import foreign
 
 from sqlalchemy.sql.expression import false, null
@@ -203,24 +203,5 @@ class UserCatagory(Base, BaseMixin):
     __tablename__ = "UserCatagory"
     catagory_name = Column(String(200), nullable=False)
     catagory_color = Column(String(45), nullable=True, default="red")
-    user_id = Column(Integer,
-                     ForeignKey("Users.id"),
-                     primary_key=True,
-                     nullable=False)
-
-    user_post = relationship("UserPosts", backref="usercatagory")
-
-
-class UserPosts(Base, BaseMixin):
-    __tablename__ = "UserPosts"
-    #게시물
-    post_title = Column(String(100), nullable=False)
-    post_body = Column(String(), nullable=False)
-    catagory_id = Column(Integer,
-                         ForeignKey("UserCatagory.id"),
-                         primary_key=True,
-                         nullable=False)
-    # user_id = Column(Integer,
-    #                  ForeignKey("UserCatagory.user_id"),
-    #                  primary_key=True,
-    #                  nullable=False)
+    user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
+    parent_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)

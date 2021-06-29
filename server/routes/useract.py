@@ -11,7 +11,7 @@ from inspect import currentframe as frame
 
 from starlette.requests import Request
 
-from database.schema import db, UserCatagory, Users, UserPosts
+from database.schema import db, UserCatagory, Users
 import model as m
 
 router = APIRouter(prefix="/useract")
