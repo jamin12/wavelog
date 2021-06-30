@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ReactBaseSize {
-  double _standardSize = 800;
+  double _standardSize = 1100;
   bool _isWebCheck() => identical(0, 0.0);
 }
 
