@@ -49,9 +49,9 @@ class CatagoryList(BaseModel):
 
 #카테고리 레지스터
 class CatagoryRegister(BaseModel):
-    parent_id: int = None
     catagory_name: str = None
     catagory_color: str = None
+    parent_id: int = None
 
 
 #카테고리 삭제
@@ -70,6 +70,7 @@ class Mainpage(BaseModel):
 class PostRegister(BaseModel):
     post_title: str = None
     post_body: str = None
+    catagory_id: int = None
 
 
 #메시지 OK

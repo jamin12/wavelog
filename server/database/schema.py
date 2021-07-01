@@ -1,10 +1,5 @@
 from os import path as op
-import re
 from sys import path as sp
-from typing import ClassVar, Text
-from sqlalchemy.orm.relationships import foreign
-
-from sqlalchemy.sql.expression import false, null
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -193,7 +188,7 @@ class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
     user_name = Column(String(40), nullable=False, unique=True)
-    password = Column(String(200), nullable=False)
+    password = Column(String(255), nullable=False)
 
     user_catagory = relationship("UserCatagory", backref="user")
 
@@ -205,3 +200,29 @@ class UserCatagory(Base, BaseMixin):
     catagory_color = Column(String(45), nullable=True, default="red")
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
     parent_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
+
+    user_post = relationship("UserPosts", backref="user_catagory")
+
+
+class Posts(Base, BaseMixin):
+    #게시물 테이블
+    __tablename__ = "Posts"
+    post_title = Column(String(255), nullable=True)
+
+    user_post = relationship("UserPosts", backref="posts")
+
+
+class PostBody(Base, BaseMixin):
+    #게시물 본문 테이블
+    __tablename__ = "PostBody"
+    post_id = Column(Integer, ForeignKey("Posts.id"), nullable=False)
+    post_body = ()
+
+    post = relationship("Posts", backref=backref("post_body", uselist=False))
+
+
+class UserPosts(Base, BaseMixin):
+    #회원 게시물
+    __tablename__ = "UserPosts"
+    post_id = Column(Integer, ForeignKey("Posts.id"), nullable=True)
+    catagory_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)

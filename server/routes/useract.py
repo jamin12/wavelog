@@ -1,6 +1,10 @@
+from enum import auto
 from os import path as op
 from sys import path as sp
 from typing import List
+
+from starlette import requests
+import starlette
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -11,7 +15,7 @@ from inspect import currentframe as frame
 
 from starlette.requests import Request
 
-from database.schema import db, UserCatagory, Users
+from database.schema import *
 import model as m
 
 router = APIRouter(prefix="/useract")
@@ -102,5 +106,21 @@ async def create_post(request: Request,
     """
     게시물 생성
     """
-    user = request.state.user
-    UserPosts.create(session=session, auto_commit=True, **post_info)
+    try:
+        Posts.create(session=session,
+                     auto_commit=True,
+                     post_title=post_info.post_title)
+
+        PostBody.create(session=session,
+                        auto_commit=True,
+                        post_id=Posts.filter().order_by("-id").first(),
+                        post_body=post_info.post_body)
+
+        UserPosts.create(session=session,
+                         auto_commit=True,
+                         post_body=Posts.filter().order_by("-id").first(),
+                         catagory_id=post_info.catagory_id)
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
