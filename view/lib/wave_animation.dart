@@ -6,8 +6,13 @@ import 'package:flutter/material.dart';
 class WaveAnimation extends StatefulWidget {
   final int waveSpeed;
   final bool reverse;
+  final Color color;
 
-  const WaveAnimation({Key? key, this.waveSpeed = 2, this.reverse = false})
+  const WaveAnimation(
+      {Key? key,
+      this.waveSpeed = 2,
+      this.reverse = false,
+      this.color = COLOR_SEA})
       : super(key: key);
   @override
   _WaveAnimationState createState() => _WaveAnimationState();
@@ -43,7 +48,7 @@ class _WaveAnimationState extends State<WaveAnimation>
       builder: (context, child) => ClipPath(
         clipper: WaveClipper(_animation.value),
         child: Container(
-          color: COLOR_SEA,
+          color: widget.color,
           // decoration: BoxDecoration(
           //   gradient: LinearGradient(
           //     colors: [COLOR_SEA, COLOR_SEA2],

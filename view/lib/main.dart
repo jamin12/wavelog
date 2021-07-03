@@ -1,5 +1,8 @@
-import 'package:blog/views/main_screen.dart';
+import 'package:blog/providers/main_widget_notifier.dart';
+import 'package:blog/providers/wave_notifier.dart';
+import 'package:blog/views/main_screen/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum ANIMATION_TYPE { START, CHANGE, NONE }
 enum PAGE_TYPE { BEACH, SEA }
@@ -18,8 +21,17 @@ class Blog extends StatelessWidget {
           return MaterialPageRoute(
             settings: RouteSettings(name: '/'),
             maintainState: false,
-            builder: (context) {
-              return MainScreen();
+            builder: (_) {
+              return MultiProvider(
+                providers: [
+                  ChangeNotifierProvider<MainWidgetNotifier>(
+                      create: (_) => MainWidgetNotifier()),
+                  ChangeNotifierProvider<WaveNotifier>(
+                    create: (context) => WaveNotifier(),
+                  ),
+                ],
+                child: MainScreen(),
+              );
             },
           );
         }
