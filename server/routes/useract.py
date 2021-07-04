@@ -116,14 +116,14 @@ async def create_post(request: Request,
     자신의 카테고리 아이디가 아닐경우 에러메시지 띄우기
     """
     user = request.state.user
-    try:
-        catagory_id = []
-        my_catagory = UserCatagory.filter(user_id=user.id).all()
-        for i in my_catagory:
-            catagory_id.append(i.id)
-        if post_info.catagory_id not in catagory_id:
-            raise TokenDecodeEx()
+    catagory_id = []
+    my_catagory = UserCatagory.filter(user_id=user.id).all()
+    for i in my_catagory:
+        catagory_id.append(i.id)
+    if post_info.catagory_id not in catagory_id:
+        raise TokenDecodeEx()
 
+    try:
         Posts.create(session=session,
                      auto_commit=True,
                      post_title=post_info.post_title)

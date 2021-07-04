@@ -37,7 +37,7 @@ async def index():
     return outputlist
 
 
-@router.get("/post", response_model=List[m.GetPostList])
+@router.get("/post", response_model=List[m.GetPostList], status_code=200)
 async def get_post(request: Request):
     try:
         user_post = UserPosts.filter()._q
