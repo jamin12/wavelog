@@ -111,10 +111,6 @@ async def create_post(request: Request,
     """
     게시물 생성
     """
-    """
-    TODO 
-    자신의 카테고리 아이디가 아닐경우 에러메시지 띄우기
-    """
     user = request.state.user
     catagory_id = []
     my_catagory = UserCatagory.filter(user_id=user.id).all()
@@ -148,3 +144,8 @@ async def create_post(request: Request,
         request.state.inspect = frame()
         raise e
     return m.MessageOk()
+
+
+@router.put("/post", status_code=200)
+async def put_post(request: Request, post_info=m.UpdatePost):
+    user = request.state.user

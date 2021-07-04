@@ -215,7 +215,7 @@ class Posts(Base, BaseMixin):
 class PostBody(Base, BaseMixin):
     #게시물 본문 테이블
     __tablename__ = "PostBody"
-    id = 0
+    id = None
     post_id = Column(
         Integer,
         ForeignKey("Posts.id"),

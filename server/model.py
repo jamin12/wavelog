@@ -96,6 +96,13 @@ class GetPostList(BaseModel):
         orm_mode = True
 
 
+class UpdatePost(BaseModel):
+    post_id: int = None
+    post_title: str = None
+    post_body: str = None
+    catagory_id: int = None
+
+
 #메시지 OK
 class MessageOk(BaseModel):
     message: str = Field(default="OK")
