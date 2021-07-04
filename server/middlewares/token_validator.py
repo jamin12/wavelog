@@ -1,11 +1,8 @@
 from os import path as op
 from sys import path as sp
 
-from sqlalchemy.orm import session
-
 sp.append(op.dirname(op.dirname(__file__)))
 
-import PIL.Image as pilimg
 import time
 import jwt
 import re
@@ -56,7 +53,7 @@ async def access_control(request: Request, call_next):
             #토큰 체크
             if "authorization" in headers.keys():
                 token_info = await token_decode(headers.get("Authorization"))
-                print(token_info)
+
                 request.state.user = m.UserToken(**token_info)
                 # qs = str(request.query_params)
                 # qs_list = qs.split("&")
@@ -66,6 +63,9 @@ async def access_control(request: Request, call_next):
             else:
                 raise ex.NotAuthorized()
 
+        if url.startswith('/service'):
+            response = await call_next(request)
+            return response
     except Exception as e:
         error = await exception_handler(e)
         error_dict = dict(status=error.status_code,

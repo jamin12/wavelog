@@ -1,10 +1,6 @@
-from enum import auto
 from os import path as op
 from sys import path as sp
 from typing import List
-
-from starlette import requests
-import starlette
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -17,6 +13,7 @@ from starlette.requests import Request
 
 from database.schema import *
 import model as m
+from errors.exceptions import TokenDecodeEx
 
 router = APIRouter(prefix="/useract")
 
@@ -52,10 +49,12 @@ async def get_catagory(request: Request):
     내 카테고리
     """
     try:
+
         user = request.state.user
         my_catagory = UserCatagory.filter(user_id=user.id).all()
+
     except Exception as e:
-        request.state.inspect = frame
+        request.state.inspect = frame()
         raise e
     return my_catagory
 
@@ -81,9 +80,15 @@ async def put_catagory(request: Request, catagory_name: str,
     """
     카테고리 이름 변경
     """
-    user = request.state.user
-    UserCatagory.filter(user_id=user.id, catagory_name=catagory_name).update(
-        auto_commit=True, catagory_name=catagory_rename)
+    try:
+        user = request.state.user
+        UserCatagory.filter(user_id=user.id,
+                            catagory_name=catagory_name).update(
+                                auto_commit=True,
+                                catagory_name=catagory_rename)
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
     return m.MessageOk()
 
 
@@ -106,19 +111,38 @@ async def create_post(request: Request,
     """
     게시물 생성
     """
+    """
+    TODO 
+    자신의 카테고리 아이디가 아닐경우 에러메시지 띄우기
+    """
+    user = request.state.user
     try:
+        catagory_id = []
+        my_catagory = UserCatagory.filter(user_id=user.id).all()
+        for i in my_catagory:
+            catagory_id.append(i.id)
+        if post_info.catagory_id not in catagory_id:
+            raise TokenDecodeEx()
+
         Posts.create(session=session,
                      auto_commit=True,
                      post_title=post_info.post_title)
 
         PostBody.create(session=session,
                         auto_commit=True,
-                        post_id=Posts.filter().order_by("-id").first(),
+                        post_id=Posts.filter().order_by("-id").first().id,
                         post_body=post_info.post_body)
 
+    except Exception as e:
+        Posts.filter(id=Posts.filter().order_by("-id").first().id).delete(
+            auto_commit=True)
+        request.state.inspect = frame()
+        raise e
+
+    try:
         UserPosts.create(session=session,
                          auto_commit=True,
-                         post_body=Posts.filter().order_by("-id").first(),
+                         post_id=Posts.filter().order_by("-id").first().id,
                          catagory_id=post_info.catagory_id)
     except Exception as e:
         request.state.inspect = frame()

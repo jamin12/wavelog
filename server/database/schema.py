@@ -198,8 +198,8 @@ class UserCatagory(Base, BaseMixin):
     __tablename__ = "UserCatagory"
     catagory_name = Column(String(200), nullable=False)
     catagory_color = Column(String(45), nullable=True, default="red")
-    user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
     parent_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
 
     user_post = relationship("UserPosts", backref="user_catagory")
 
@@ -215,8 +215,14 @@ class Posts(Base, BaseMixin):
 class PostBody(Base, BaseMixin):
     #게시물 본문 테이블
     __tablename__ = "PostBody"
-    post_id = Column(Integer, ForeignKey("Posts.id"), nullable=False)
-    post_body = ()
+    id = 0
+    post_id = Column(
+        Integer,
+        ForeignKey("Posts.id"),
+        primary_key=True,
+        nullable=False,
+    )
+    post_body = Column(String(), nullable=True)
 
     post = relationship("Posts", backref=backref("post_body", uselist=False))
 
