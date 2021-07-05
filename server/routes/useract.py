@@ -104,48 +104,47 @@ async def delete_catagory(request: Request, catagory_name: str):
     return m.MessageOk()
 
 
-@router.post("/post", status_code=201)
-async def create_post(request: Request,
-                      post_info: m.PostRegister,
-                      session: Session = Depends(db.session)):
-    """
-    게시물 생성
-    """
-    user = request.state.user
-    catagory_id = []
-    my_catagory = UserCatagory.filter(user_id=user.id).all()
-    for i in my_catagory:
-        catagory_id.append(i.id)
-    if post_info.catagory_id not in catagory_id:
-        raise TokenDecodeEx()
+# @router.post("/post", status_code=201)
+# async def create_post(request: Request,
+#                       post_info: m.PostRegister,
+#                       session: Session = Depends(db.session)):
+#     """
+#     게시물 생성
+#     """
+#     user = request.state.user
+#     catagory_id = []
+#     my_catagory = UserCatagory.filter(user_id=user.id).all()
+#     for i in my_catagory:
+#         catagory_id.append(i.id)
+#     if post_info.catagory_id not in catagory_id:
+#         raise TokenDecodeEx()
 
-    try:
-        Posts.create(session=session,
-                     auto_commit=True,
-                     post_title=post_info.post_title)
+#     try:
+#         Posts.create(session=session,
+#                      auto_commit=True,
+#                      post_title=post_info.post_title)
 
-        PostBody.create(session=session,
-                        auto_commit=True,
-                        post_id=Posts.filter().order_by("-id").first().id,
-                        post_body=post_info.post_body)
+#         PostBody.create(session=session,
+#                         auto_commit=True,
+#                         post_id=Posts.filter().order_by("-id").first().id,
+#                         post_body=post_info.post_body)
 
-    except Exception as e:
-        Posts.filter(id=Posts.filter().order_by("-id").first().id).delete(
-            auto_commit=True)
-        request.state.inspect = frame()
-        raise e
+#     except Exception as e:
+#         Posts.filter(id=Posts.filter().order_by("-id").first().id).delete(
+#             auto_commit=True)
+#         request.state.inspect = frame()
+#         raise e
 
-    try:
-        UserPosts.create(session=session,
-                         auto_commit=True,
-                         post_id=Posts.filter().order_by("-id").first().id,
-                         catagory_id=post_info.catagory_id)
-    except Exception as e:
-        request.state.inspect = frame()
-        raise e
-    return m.MessageOk()
+#     try:
+#         UserPosts.create(session=session,
+#                          auto_commit=True,
+#                          post_id=Posts.filter().order_by("-id").first().id,
+#                          catagory_id=post_info.catagory_id)
+#     except Exception as e:
+#         request.state.inspect = frame()
+#         raise e
+#     return m.MessageOk()
 
-
-@router.put("/post", status_code=200)
-async def put_post(request: Request, post_info=m.UpdatePost):
-    user = request.state.user
+# @router.put("/post", status_code=200)
+# async def put_post(request: Request, post_info=m.UpdatePost):
+#     user = request.state.user

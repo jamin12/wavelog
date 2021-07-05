@@ -201,34 +201,32 @@ class UserCatagory(Base, BaseMixin):
     parent_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
 
-    user_post = relationship("UserPosts", backref="user_catagory")
+    # user_post = relationship("UserPosts", backref="user_catagory")
 
 
-class Posts(Base, BaseMixin):
-    #게시물 테이블
-    __tablename__ = "Posts"
-    post_title = Column(String(255), nullable=True)
+# class Posts(Base, BaseMixin):
+#     #게시물 테이블
+#     __tablename__ = "Posts"
+#     post_title = Column(String(255), nullable=True)
 
-    user_post = relationship("UserPosts", backref="posts")
+#     user_post = relationship("UserPosts", backref="posts")
 
+# class PostBody(Base, BaseMixin):
+#     #게시물 본문 테이블
+#     __tablename__ = "PostBody"
+#     id = None
+#     post_id = Column(
+#         Integer,
+#         ForeignKey("Posts.id"),
+#         primary_key=True,
+#         nullable=False,
+#     )
+#     post_body = Column(String(), nullable=True)
 
-class PostBody(Base, BaseMixin):
-    #게시물 본문 테이블
-    __tablename__ = "PostBody"
-    id = None
-    post_id = Column(
-        Integer,
-        ForeignKey("Posts.id"),
-        primary_key=True,
-        nullable=False,
-    )
-    post_body = Column(String(), nullable=True)
+#     post = relationship("Posts", backref=backref("post_body", uselist=False))
 
-    post = relationship("Posts", backref=backref("post_body", uselist=False))
-
-
-class UserPosts(Base, BaseMixin):
-    #회원 게시물
-    __tablename__ = "UserPosts"
-    post_id = Column(Integer, ForeignKey("Posts.id"), nullable=True)
-    catagory_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
+# class UserPosts(Base, BaseMixin):
+#     #회원 게시물
+#     __tablename__ = "UserPosts"
+#     post_id = Column(Integer, ForeignKey("Posts.id"), nullable=True)
+#     catagory_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)

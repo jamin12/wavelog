@@ -9,7 +9,7 @@ from typing import List
 from inspect import currentframe as frame
 
 import model as m
-from database.schema import Users, UserCatagory, UserPosts
+from database.schema import Users, UserCatagory
 
 router = APIRouter()
 
