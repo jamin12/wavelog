@@ -80,7 +80,7 @@ class AboutWidget extends StatelessWidget {
             email: 'rudals951004@gmail.com',
             residence: 'Republic of Korea',
             address: 'Incheon, Gyeonggi-do',
-            phone: '+82 10-1234-1234'),
+            phone: '+82 10-7454-0118'),
         const SizedBox(
           height: 50.0,
         ),

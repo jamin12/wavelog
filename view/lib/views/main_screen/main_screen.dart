@@ -9,7 +9,7 @@ import 'package:blog/wave_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum MAIN_WIDGET { MAIN, ABOUT }
+enum MAIN_WIDGET { MAIN, ABOUT, DETAIL }
 
 // ignore: must_be_immutable
 class MainScreen extends PageClass {
@@ -47,9 +47,27 @@ class MainScreen extends PageClass {
     );
   }
 
-  Widget screenWidget(MAIN_WIDGET widget) {
+  Widget screenWidget(BuildContext context, Size size, MAIN_WIDGET widget) {
     if (widget == MAIN_WIDGET.ABOUT) return AboutWidget();
-    return MainWidget(tempCategory: _tempCategory, tempPost: _tempPost);
+    if (widget == MAIN_WIDGET.DETAIL) return DetailWidget();
+    return MainWidget(
+      tempCategory: _tempCategory,
+      tempPost: _tempPost,
+      itemClickListener: (int index) {
+        changeView(context, size, changeView: MAIN_WIDGET.DETAIL);
+      },
+    );
+  }
+
+  void changeView(BuildContext context, Size size,
+      {required MAIN_WIDGET changeView}) async {
+    context.read<WaveNotifier>().changeWaveWidth(size.width / 3 * 2);
+
+    await Future.delayed(Duration(milliseconds: 800));
+    context.read<MainWidgetNotifier>().changeMainWidget(changeView);
+
+    await Future.delayed(Duration(milliseconds: 100));
+    context.read<WaveNotifier>().changeWaveWidth(size.width / 6);
   }
 
   @override
@@ -74,7 +92,7 @@ class MainScreen extends PageClass {
                     padding: EdgeInsets.symmetric(horizontal: 80.0),
                     child: Consumer<MainWidgetNotifier>(
                       builder: (context, value, child) =>
-                          screenWidget(value.mainWidget),
+                          screenWidget(context, size, value.mainWidget),
                     ),
                   ),
                 ),
@@ -86,57 +104,48 @@ class MainScreen extends PageClass {
         ),
         menu: (context) => Container(
           color: COLOR_BEACH,
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Tooltip(
-                message: 'Home',
-                child: IconButton(
-                  onPressed: () async {
-                    context
-                        .read<WaveNotifier>()
-                        .changeWaveWidth(size.width / 6 * 4);
-
-                    await Future.delayed(Duration(milliseconds: 500));
-                    context
-                        .read<MainWidgetNotifier>()
-                        .changeMainWidget(MAIN_WIDGET.MAIN);
-                    context
-                        .read<WaveNotifier>()
-                        .changeWaveWidth(size.width / 6);
-                  },
-                  icon: Icon(
-                    Icons.home_outlined,
-                    color: COLOR_BLACK,
-                    size: 32.0,
+          child: Consumer<MainWidgetNotifier>(
+            builder: (_, MainWidgetNotifier value, __) => Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Tooltip(
+                  message: 'Home',
+                  child: IconButton(
+                    onPressed: () async {
+                      if (value.mainWidget != MAIN_WIDGET.MAIN) {
+                        changeView(context, size, changeView: MAIN_WIDGET.MAIN);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.home,
+                      color: value.mainWidget == MAIN_WIDGET.MAIN
+                          ? COLOR_BACK
+                          : COLOR_BLACK,
+                      size: 32.0,
+                    ),
                   ),
                 ),
-              ),
-              Tooltip(
-                message: 'About us',
-                child: IconButton(
-                  onPressed: () async {
-                    context
-                        .read<WaveNotifier>()
-                        .changeWaveWidth(size.width / 6 * 4);
-
-                    await Future.delayed(Duration(milliseconds: 500));
-                    context
-                        .read<MainWidgetNotifier>()
-                        .changeMainWidget(MAIN_WIDGET.ABOUT);
-                    context
-                        .read<WaveNotifier>()
-                        .changeWaveWidth(size.width / 6);
-                  },
-                  icon: Icon(
-                    Icons.group_outlined,
-                    color: COLOR_BLACK,
-                    size: 32.0,
+                Tooltip(
+                  message: 'About us',
+                  child: IconButton(
+                    onPressed: () async {
+                      if (value.mainWidget != MAIN_WIDGET.ABOUT) {
+                        changeView(context, size,
+                            changeView: MAIN_WIDGET.ABOUT);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.group,
+                      color: value.mainWidget == MAIN_WIDGET.ABOUT
+                          ? COLOR_BACK
+                          : COLOR_BLACK,
+                      size: 32.0,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -194,6 +203,95 @@ class MainScreen extends PageClass {
   }
 }
 
+class DetailWidget extends StatelessWidget {
+  const DetailWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 50.0,
+        ),
+        SelectableText(
+          'Title',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 40.0,
+            color: COLOR_BLACK,
+          ),
+        ),
+        const SizedBox(
+          height: 30.0,
+        ),
+        SelectableText(
+          '내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게내용 겁나길게',
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 20.0,
+            color: COLOR_BLACK,
+          ),
+        ),
+        const SizedBox(
+          height: 30.0,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15.0),
+          child: Row(
+            children: [
+              Container(
+                width: 200.0,
+                margin: const EdgeInsets.only(right: 10.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                    labelText: 'Nickname',
+                  ),
+                ),
+              ),
+              Container(
+                width: 250.0,
+                child: TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                    labelText: 'Password',
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        TextField(
+          keyboardType: TextInputType.multiline,
+          maxLength: null,
+          maxLines: null,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(
+              bottom: 16.0,
+              top: 8.0,
+              left: 10.0,
+              right: 10.0,
+            ),
+            // isCollapsed: true,
+            alignLabelWithHint: true,
+            suffixIcon: Icon(Icons.send),
+            border:
+                OutlineInputBorder(borderSide: BorderSide(color: COLOR_BACK)),
+            labelText: 'Contents',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class BuildWave extends StatefulWidget {
   final double initWaveSize;
 
@@ -221,20 +319,14 @@ class _BuildWaveState extends State<BuildWave> {
         : waveWidth;
 
     return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 800),
       width: waveWidth,
       curve: Curves.decelerate,
-      child: SizedBox(
-        child: Stack(
-          children: [
-            RotatedBox(
-              quarterTurns: 1,
-              child: WaveAnimation(
-                waveSpeed: 2,
-                reverse: false,
-              ),
-            ),
-          ],
+      child: RotatedBox(
+        quarterTurns: 1,
+        child: WaveAnimation(
+          waveSpeed: 2,
+          reverse: false,
         ),
       ),
     );

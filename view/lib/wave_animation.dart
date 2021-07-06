@@ -51,7 +51,7 @@ class _WaveAnimationState extends State<WaveAnimation>
           color: widget.color,
           // decoration: BoxDecoration(
           //   gradient: LinearGradient(
-          //     colors: [COLOR_SEA, COLOR_SEA2],
+          //     colors: [COLOR_BLUE, COLOR_SEA],
           //     begin: Alignment.topCenter,
           //     end: Alignment.bottomCenter,
           //   ),
