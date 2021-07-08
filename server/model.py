@@ -1,5 +1,6 @@
 from pydantic import Field
 from pydantic.main import BaseModel
+from pydantic.networks import EmailStr
 """
 TODO 
 orm_mode 이놈 뭐하는 친구인지 이해하기..... 
@@ -10,9 +11,18 @@ erd 모델 바뀐후 model 변경 안함.......하.....
 """
 
 
-#유저 인풋
+#유저 생성
 class UserRegister(BaseModel):
     # pip install 'pydantic[email]'
+    user_name: str = None
+    password: str = None
+    email: EmailStr = None
+    phone_num: str = None
+    residence: str = None
+
+
+#유저 로그인
+class UserLogin(BaseModel):
     user_name: str = None
     password: str = None
 
@@ -23,18 +33,12 @@ class Token(BaseModel):
 
 
 #유저 아우풋
-class UserOut(BaseModel):
-    id: int = None
-    user_name: str = None
-
-    class Config:
-        orm_mode = True
-
-
-#유저 토큰
 class UserToken(BaseModel):
     id: int = None
     user_name: str = None
+    email: EmailStr = None
+    phone_num: str = None
+    residence: str = None
 
     class Config:
         orm_mode = True
@@ -44,18 +48,9 @@ class UserToken(BaseModel):
 class GetUserList(BaseModel):
     id: int = None
     user_name: str = None
-
-    class Config:
-        orm_mode = True
-
-
-#카테고리 리스트
-class CatagoryList(BaseModel):
-    id: int = None
-    catagory_name: str = None
-    catagory_color: str = None
-    parent_id: int = None
-    user_id: int = None
+    email: EmailStr = None
+    phone_num: str = None
+    residence: str = None
 
     class Config:
         orm_mode = True
@@ -65,19 +60,22 @@ class CatagoryList(BaseModel):
 class CatagoryRegister(BaseModel):
     catagory_name: str = None
     catagory_color: str = None
-    parent_id: int = None
+
+
+#카테고리 리스트
+class CatagoryList(BaseModel):
+    id: int = None
+    catagory_name: str = None
+    catagory_color: str = None
+    user_id: int = None
+
+    class Config:
+        orm_mode = True
 
 
 #카테고리 삭제
 class CatagoryDelete(BaseModel):
     catagory_name: str = None
-
-
-#메인 페이지 뷰
-class Mainpage(BaseModel):
-    user_name: str = None
-    catagory_name: str = None
-    catagory_color: str = None
 
 
 #게시물 레지스터

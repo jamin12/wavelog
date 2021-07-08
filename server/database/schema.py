@@ -1,5 +1,6 @@
 from os import path as op
 from sys import path as sp
+from typing import Text
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -10,6 +11,7 @@ from sqlalchemy import (
     DateTime,
     func,
     ForeignKey,
+    TEXT,
 )
 from sqlalchemy.orm import Session, backref, relationship
 
@@ -189,6 +191,9 @@ class Users(Base, BaseMixin):
     __tablename__ = "Users"
     user_name = Column(String(40), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
+    phone_num = Column(String(50), nullable=True)
+    residence = Column(String(255), nullable=True)
 
     user_catagory = relationship("UserCatagory", backref="user")
 
@@ -198,35 +203,32 @@ class UserCatagory(Base, BaseMixin):
     __tablename__ = "UserCatagory"
     catagory_name = Column(String(200), nullable=False)
     catagory_color = Column(String(45), nullable=True, default="red")
-    parent_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
 
     # user_post = relationship("UserPosts", backref="user_catagory")
 
 
-# class Posts(Base, BaseMixin):
-#     #게시물 테이블
-#     __tablename__ = "Posts"
-#     post_title = Column(String(255), nullable=True)
+class Posts(Base, BaseMixin):
+    #게시물 테이블
+    __tablename__ = "Posts"
+    post_title = Column(String(255), nullable=True)
+    catagory_id = Column(
+        Integer,
+        ForeignKey("UserCatagory.id"),
+        nullable=False,
+    )
 
-#     user_post = relationship("UserPosts", backref="posts")
 
-# class PostBody(Base, BaseMixin):
-#     #게시물 본문 테이블
-#     __tablename__ = "PostBody"
-#     id = None
-#     post_id = Column(
-#         Integer,
-#         ForeignKey("Posts.id"),
-#         primary_key=True,
-#         nullable=False,
-#     )
-#     post_body = Column(String(), nullable=True)
+class PostBody(Base, BaseMixin):
+    #게시물 본문 테이블
+    __tablename__ = "PostBody"
+    id = None
+    post_id = Column(
+        Integer,
+        ForeignKey("Posts.id"),
+        primary_key=True,
+        nullable=False,
+    )
+    post_body = Column(TEXT(65535), nullable=True)
 
-#     post = relationship("Posts", backref=backref("post_body", uselist=False))
-
-# class UserPosts(Base, BaseMixin):
-#     #회원 게시물
-#     __tablename__ = "UserPosts"
-#     post_id = Column(Integer, ForeignKey("Posts.id"), nullable=True)
-#     catagory_id = Column(Integer, ForeignKey("UserCatagory.id"), nullable=True)
+    post = relationship("Posts", backref=backref("post_body", uselist=False))

@@ -12,7 +12,7 @@ import jwt
 import bcrypt
 from datetime import datetime, timedelta
 
-from model import UserRegister, Token, UserOut, MessageOk
+from model import UserRegister, Token, UserToken, MessageOk, UserLogin
 from database.conn import db
 from database.schema import Users
 from common.consts import JWT_SECRET, JWT_ALGORITHM
@@ -54,7 +54,7 @@ async def register(reg_info: UserRegister,
     Users.create(
         session,
         auto_commit=True,
-        user_name=reg_info.user_name,
+        **reg_info.dict(exclude={'password'}),
         password=hash_pw,
     )
 
@@ -62,7 +62,7 @@ async def register(reg_info: UserRegister,
 
 
 @router.post("/login", status_code=200, response_model=Token)
-async def login(user_info: UserRegister):
+async def login(user_info: UserLogin):
     """
     로그인 API
     """
@@ -85,7 +85,8 @@ async def login(user_info: UserRegister):
             content=dict(msg="user_name or password must be provided"))
     token = dict(
         Authorization=
-        f"Bearer {create_access_token(data=UserOut.from_orm(user).dict(),)}")
+        f"Bearer {create_access_token(data=UserToken.from_orm(user).dict(exclude={'password'}),)}"
+    )
     return token
 
 
