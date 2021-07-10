@@ -101,6 +101,11 @@ class UpdatePost(BaseModel):
     catagory_id: int = None
 
 
+class noticeboard(BaseModel):
+    catagory_name: str = None
+    catagory_color: str = None
+
+
 #메시지 OK
 class MessageOk(BaseModel):
     message: str = Field(default="OK")

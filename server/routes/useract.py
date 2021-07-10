@@ -1,5 +1,6 @@
 from enum import auto
 from os import path as op
+import re
 from sys import path as sp
 from typing import List
 
@@ -115,9 +116,10 @@ async def create_post(request: Request,
                       session: Session = Depends(db.session)):
     try:
         user = request.state.user
-        catagory_list = []
-        for i in UserCatagory.filter(user_id=user.id).all():
-            catagory_list.append(i.id)
+        catagory_list = [
+            catagory_info.id
+            for catagory_info in UserCatagory.filter(user_id=user.id).all()
+        ]
 
         if reg_info.catagory_id not in catagory_list:
             raise TokenDecodeEx
@@ -134,6 +136,16 @@ async def create_post(request: Request,
             post_id=Posts.filter().order_by("-id").first().id,
             post_body=reg_info.post_body,
         )
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
+@router.put('/post', status_code=200)
+async def update_post(request: Request):
+    try:
+        user = request.state.user
     except Exception as e:
         request.state.inspect = frame()
         raise e
