@@ -13,7 +13,7 @@ from sqlalchemy import (
     ForeignKey,
     TEXT,
 )
-from sqlalchemy.orm import Session, backref, relationship
+from sqlalchemy.orm import Session, backref, query, relationship
 
 from database.conn import Base, db
 
@@ -93,6 +93,7 @@ class BaseMixin:
         cond = []
         for key, val in kwargs.items():
             key = key.split("__")
+
             if len(key) > 2:
                 raise Exception("No 2 more dunders")
             col = getattr(cls, key[0])
@@ -133,6 +134,25 @@ class BaseMixin:
             return col
         else:
             return cls
+
+    @classmethod
+    def outerjoin(cls,
+                  session: Session = None,
+                  outcls: object = None,
+                  condition1: Column = None,
+                  condition2: Column = None):
+        obj = cls()
+        if session:
+            obj._session = session
+            obj.served = True
+        else:
+            obj._session = next(db.session())
+            obj.served = False
+        query = obj._session.query(cls)
+        query = query.outerjoin(outcls, condition1 == condition2)
+        obj._q = query
+        # print(obj._q)
+        return obj
 
     def order_by(self, *args: str):
         for a in args:

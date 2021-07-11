@@ -1,5 +1,6 @@
 from os import path as op
 from sys import path as sp
+from sqlalchemy.sql.functions import user
 
 sp.append(op.dirname(op.dirname(__file__)))
 
