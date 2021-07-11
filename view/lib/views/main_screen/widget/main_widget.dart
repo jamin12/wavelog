@@ -74,36 +74,41 @@ class MainWidget extends StatelessWidget {
           itemCount: _tempPost.length,
           itemBuilder: (context, index) => ClipRRect(
             borderRadius: BorderRadius.circular(15.0),
-            child: GestureDetector(
-              onTap: () {
-                itemClickListener(index);
-              },
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    child: Icon(
-                      Icons.water_rounded,
-                      size: 300.0,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  itemClickListener(index);
+                },
+                hoverColor: Colors.black,
+                splashColor: COLOR_BEACH,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: Icon(
+                        Icons.water_rounded,
+                        size: 300.0,
+                      ),
                     ),
-                  ),
-                  Container(
-                    color: COLOR_BLACK.withOpacity(0.9),
-                    child: Center(
-                      child: Text(
-                        _tempPost[index],
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30.0,
+                    Container(
+                      color: COLOR_BLACK.withOpacity(0.9),
+                      child: Center(
+                        child: Text(
+                          _tempPost[index],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
