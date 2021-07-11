@@ -3,13 +3,13 @@ import 'package:blog/providers/main_widget_notifier.dart';
 import 'package:blog/providers/wave_notifier.dart';
 import 'package:blog/views/common_components/layout/web_layout.dart';
 import 'package:blog/views/main_screen/widget/about_widget.dart';
-import 'package:blog/views/main_screen/widget/main_widget.dart';
+import 'package:blog/views/main_screen/widget/contents_widget.dart';
 import 'package:blog/views/page_class_wrapper/page_class.dart';
 import 'package:blog/wave_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum MAIN_WIDGET { MAIN, ABOUT, DETAIL }
+enum MAIN_WIDGET { MAIN, CONTENTS, ABOUT, DETAIL }
 
 // ignore: must_be_immutable
 class MainScreen extends PageClass {
@@ -47,16 +47,26 @@ class MainScreen extends PageClass {
     );
   }
 
+  /// 메인 스크린 위젯 설정
   Widget screenWidget(BuildContext context, Size size, MAIN_WIDGET widget) {
-    if (widget == MAIN_WIDGET.ABOUT) return AboutWidget();
-    if (widget == MAIN_WIDGET.DETAIL) return DetailWidget();
-    return MainWidget(
-      tempCategory: _tempCategory,
-      tempPost: _tempPost,
-      itemClickListener: (int index) {
-        changeView(context, size, changeView: MAIN_WIDGET.DETAIL);
-      },
-    );
+    switch (widget) {
+      case MAIN_WIDGET.MAIN:
+        return MainWidget();
+      case MAIN_WIDGET.ABOUT:
+        return AboutWidget();
+      case MAIN_WIDGET.DETAIL:
+        return DetailWidget();
+      case MAIN_WIDGET.CONTENTS:
+        return ContentsWidget(
+          tempCategory: _tempCategory,
+          tempPost: _tempPost,
+          itemClickListener: (int index) {
+            changeView(context, size, changeView: MAIN_WIDGET.DETAIL);
+          },
+        );
+      default:
+        return MainWidget();
+    }
   }
 
   void changeView(BuildContext context, Size size,
@@ -120,6 +130,24 @@ class MainScreen extends PageClass {
                     icon: Icon(
                       Icons.home,
                       color: value.mainWidget == MAIN_WIDGET.MAIN
+                          ? COLOR_BACK
+                          : COLOR_BLACK,
+                      size: 32.0,
+                    ),
+                  ),
+                ),
+                Tooltip(
+                  message: 'Contents',
+                  child: IconButton(
+                    onPressed: () async {
+                      if (value.mainWidget != MAIN_WIDGET.CONTENTS) {
+                        changeView(context, size,
+                            changeView: MAIN_WIDGET.CONTENTS);
+                      }
+                    },
+                    icon: Icon(
+                      Icons.dashboard,
+                      color: value.mainWidget == MAIN_WIDGET.CONTENTS
                           ? COLOR_BACK
                           : COLOR_BLACK,
                       size: 32.0,
@@ -328,6 +356,84 @@ class _BuildWaveState extends State<BuildWave> {
           waveSpeed: 2,
           reverse: false,
         ),
+      ),
+    );
+  }
+}
+
+class MainWidget extends StatefulWidget {
+  @override
+  _MainWidgetState createState() => _MainWidgetState();
+}
+
+class _MainWidgetState extends State<MainWidget> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 50.0),
+          Text(
+            'Wavelog',
+            style: TextStyle(
+                fontSize: 80.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 30.0),
+          Text(
+            'Developers',
+            style: TextStyle(
+                fontSize: 40.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 15.0),
+          Text(
+            '(Font-End)Kwon Tae Woong',
+            style: TextStyle(
+                fontSize: 20.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10.0),
+          Text(
+            'Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발',
+            style: TextStyle(
+                fontSize: 20.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.normal),
+          ),
+          SizedBox(height: 10.0),
+          Text(
+            '(Back-End)Kang Kyung Min',
+            style: TextStyle(
+                fontSize: 20.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10.0),
+          Text(
+            'Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 ',
+            style: TextStyle(
+                fontSize: 20.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.normal),
+          ),
+        ],
       ),
     );
   }

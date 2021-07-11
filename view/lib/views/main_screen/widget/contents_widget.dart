@@ -1,8 +1,8 @@
 import 'package:blog/const.dart';
 import 'package:flutter/material.dart';
 
-class MainWidget extends StatelessWidget {
-  const MainWidget({
+class ContentsWidget extends StatelessWidget {
+  const ContentsWidget({
     Key? key,
     required List<String> tempCategory,
     required List<String> tempPost,

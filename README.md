@@ -8,7 +8,7 @@ blog project initialized
 
 # Commit Record
 
-[![commitcombo](http://commitcombo.com/get?user={kmeoung}&theme={Sunset-mini})](https://github.com/devxb/CommitCombo)
+[![commitcombo](http://commitcombo.com/get?user=Kmeoung&theme=Sunset-mini)](https://github.com/devxb/CommitCombo)
 
 # 이전 작업에 대한 내용
 
