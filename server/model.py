@@ -57,16 +57,16 @@ class GetUserList(BaseModel):
 
 
 #카테고리 레지스터
-class CatagoryRegister(BaseModel):
-    catagory_name: str = None
-    catagory_color: str = None
+class CategoryRegister(BaseModel):
+    category_name: str = None
+    category_color: str = None
 
 
 #카테고리 리스트
-class CatagoryList(BaseModel):
+class CategoryList(BaseModel):
     id: int = None
-    catagory_name: str = None
-    catagory_color: str = None
+    category_name: str = None
+    category_color: str = None
     user_id: int = None
 
     class Config:
@@ -74,20 +74,20 @@ class CatagoryList(BaseModel):
 
 
 #카테고리 삭제
-class CatagoryDelete(BaseModel):
-    catagory_name: str = None
+class CategoryDelete(BaseModel):
+    category_name: str = None
 
 
 #게시물 레지스터
 class PostRegister(BaseModel):
     post_title: str = None
     post_body: str = None
-    catagory_id: int = None
+    category_id: int = None
 
 
 class GetPostList(BaseModel):
     post_title: str = None
-    catagory_id: int = None
+    category_id: int = None
     user_id: int = None
 
     class Config:
@@ -98,12 +98,12 @@ class UpdatePost(BaseModel):
     post_id: int = None
     post_title: str = None
     post_body: str = None
-    catagory_id: int = None
+    category_id: int = None
 
 
-class noticeboard(BaseModel):
-    catagory_name: str = None
-    catagory_color: str = None
+class Noticeboard(BaseModel):
+    category_name: str = None
+    category_color: str = None
 
 
 #메시지 OK

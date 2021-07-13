@@ -2,6 +2,8 @@ from os import path as op
 from sys import path as sp
 from typing import Text
 
+from sqlalchemy.orm.relationships import foreign
+
 sp.append(op.dirname(op.dirname(__file__)))
 
 from sqlalchemy import (
@@ -151,7 +153,6 @@ class BaseMixin:
         query = obj._session.query(cls)
         query = query.outerjoin(outcls, condition1 == condition2)
         obj._q = query
-        # print(obj._q)
         return obj
 
     def order_by(self, *args: str):
@@ -215,28 +216,34 @@ class Users(Base, BaseMixin):
     phone_num = Column(String(50), nullable=True)
     residence = Column(String(255), nullable=True)
 
-    user_catagory = relationship("UserCatagory", backref="user")
+    #관계 형성
+    user_category = relationship("UserCategory", backref="user")
+    user_post = relationship("Posts", backref="user")
 
 
-class UserCatagory(Base, BaseMixin):
+class Categories(Base, BaseMixin):
+    __tablename__ = "Categories"
+    #카테고리 테이블
+    category_name = Column(String(200), nullable=False)
+    category_color = Column(String(45), nullable=True, default="red")
+
+    #관계 형성
+    user_category = relationship("UserCategory", backref="category")
+
+
+class UserCategory(Base, BaseMixin):
     #유저 카테고리 테이블
-    __tablename__ = "UserCatagory"
-    catagory_name = Column(String(200), nullable=False)
-    catagory_color = Column(String(45), nullable=True, default="red")
+    __tablename__ = "UserCategory"
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
-
-    # user_post = relationship("UserPosts", backref="user_catagory")
+    category_id = Column(Integer, ForeignKey("Categories.id"), nullable=False)
 
 
 class Posts(Base, BaseMixin):
     #게시물 테이블
     __tablename__ = "Posts"
     post_title = Column(String(255), nullable=True)
-    catagory_id = Column(
-        Integer,
-        ForeignKey("UserCatagory.id"),
-        nullable=False,
-    )
+    category_id = Column(Integer, ForeignKey("Categories.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
 
 
 class PostBody(Base, BaseMixin):
@@ -251,4 +258,5 @@ class PostBody(Base, BaseMixin):
     )
     post_body = Column(TEXT(65535), nullable=True)
 
+    #관계 형성
     post = relationship("Posts", backref=backref("post_body", uselist=False))
