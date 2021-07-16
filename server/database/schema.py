@@ -137,24 +137,6 @@ class BaseMixin:
         else:
             return cls
 
-    @classmethod
-    def outerjoin(cls,
-                  session: Session = None,
-                  outcls: object = None,
-                  condition1: Column = None,
-                  condition2: Column = None):
-        obj = cls()
-        if session:
-            obj._session = session
-            obj.served = True
-        else:
-            obj._session = next(db.session())
-            obj.served = False
-        query = obj._session.query(cls)
-        query = query.outerjoin(outcls, condition1 == condition2)
-        obj._q = query
-        return obj
-
     def order_by(self, *args: str):
         for a in args:
             if a.startswith("-"):
@@ -217,7 +199,7 @@ class Users(Base, BaseMixin):
     residence = Column(String(255), nullable=True)
 
     #관계 형성
-    user_category = relationship("UserCategory", backref="user")
+    user_category = relationship("Categories", backref="user")
     user_post = relationship("Posts", backref="user")
 
 
@@ -226,16 +208,7 @@ class Categories(Base, BaseMixin):
     #카테고리 테이블
     category_name = Column(String(200), nullable=False)
     category_color = Column(String(45), nullable=True, default="red")
-
-    #관계 형성
-    user_category = relationship("UserCategory", backref="category")
-
-
-class UserCategory(Base, BaseMixin):
-    #유저 카테고리 테이블
-    __tablename__ = "UserCategory"
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
-    category_id = Column(Integer, ForeignKey("Categories.id"), nullable=False)
 
 
 class Posts(Base, BaseMixin):
