@@ -66,10 +66,22 @@ async def create_category(request: Request,
     return m.MessageOk()
 
 
-@router.put("/category")
-async def update_category(request: Request):
+@router.put("/category/{category_id}/{category_rename}")
+async def update_category(request: Request, category_id: int,
+                          category_rename: str):
     try:
-        user = request.state.user
+        Categories.filter(id=category_id).update(auto_commit=True,
+                                                 category_name=category_rename)
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
+@router.delete("/category/{category_id}")
+async def delete_category(request: Request, category_id: int):
+    try:
+        Categories.filter(id=category_id).delete(auto_commit=True)
     except Exception as e:
         request.state.inspect = frame()
         raise e
