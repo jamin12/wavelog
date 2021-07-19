@@ -21,7 +21,6 @@ from database.conn import Base, db
 
 
 class BaseMixin:
-    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
     updated_at = Column(DateTime,
                         nullable=False,
@@ -192,6 +191,7 @@ class BaseMixin:
 class Users(Base, BaseMixin):
     # 유저 테이블
     __tablename__ = "Users"
+    user_id = Column(Integer, primary_key=True, index=True)
     user_name = Column(String(40), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
     email = Column(String(255), nullable=True)
@@ -216,11 +216,12 @@ class Users(Base, BaseMixin):
 class Categories(Base, BaseMixin):
     __tablename__ = "Categories"
     #카테고리 테이블
+    category_id = Column(Integer, primary_key=True, index=True)
     category_name = Column(String(200), nullable=False)
     category_color = Column(String(45), nullable=True, default="red")
     user_id = Column(
         Integer,
-        ForeignKey("Users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("Users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
 
@@ -236,15 +237,18 @@ class Categories(Base, BaseMixin):
 class Posts(Base, BaseMixin):
     #게시물 테이블
     __tablename__ = "Posts"
+    post_id = Column(Integer, primary_key=True, index=True)
     post_title = Column(String(255), nullable=True)
     category_id = Column(
         Integer,
-        ForeignKey("Categories.id", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("Categories.category_id",
+                   ondelete="CASCADE",
+                   onupdate="CASCADE"),
         nullable=False,
     )
     user_id = Column(
         Integer,
-        ForeignKey("Users.id", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("Users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
         nullable=False,
     )
 
@@ -255,7 +259,7 @@ class PostBody(Base, BaseMixin):
     id = None
     post_id = Column(
         Integer,
-        ForeignKey("Posts.id", ondelete="CASCADE", onupdate="CASCADE"),
+        ForeignKey("Posts.post_id", ondelete="CASCADE", onupdate="CASCADE"),
         primary_key=True,
         nullable=False,
     )

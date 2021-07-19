@@ -34,7 +34,7 @@ class Token(BaseModel):
 
 #유저 아우풋
 class UserToken(BaseModel):
-    id: int = None
+    user_id: int = None
     user_name: str = None
     email: EmailStr = None
     phone_num: str = None
@@ -62,22 +62,6 @@ class CategoryRegister(BaseModel):
     category_color: str = None
 
 
-#카테고리 리스트
-class CategoryList(BaseModel):
-    id: int = None
-    category_name: str = None
-    category_color: str = None
-    user_id: int = None
-
-    class Config:
-        orm_mode = True
-
-
-#카테고리 삭제
-class CategoryDelete(BaseModel):
-    category_name: str = None
-
-
 #게시물 레지스터
 class PostRegister(BaseModel):
     post_title: str = None
@@ -85,25 +69,15 @@ class PostRegister(BaseModel):
     category_id: int = None
 
 
-class GetPostList(BaseModel):
-    post_title: str = None
+class contents(BaseModel):
     category_id: int = None
-    user_id: int = None
+    post_id: int = None
+    category_name: str = None
+    category_color: str = None
+    post_title: str = None
 
     class Config:
         orm_mode = True
-
-
-class UpdatePost(BaseModel):
-    post_id: int = None
-    post_title: str = None
-    post_body: str = None
-    category_id: int = None
-
-
-class Noticeboard(BaseModel):
-    category_name: str = None
-    category_color: str = None
 
 
 #메시지 OK
