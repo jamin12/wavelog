@@ -1,3 +1,4 @@
+from enum import auto
 from os import path as op
 import re
 from sys import path as sp
@@ -98,6 +99,7 @@ async def create_post(request: Request,
         usercategorys = Categories.filter(user_id=user.user_id).all()
         for usercategory in usercategorys:
             user_category_list.append(usercategory.category_id)
+        #잘못된 카테고리가 들어왔을 때
         if reg_info.category_id not in user_category_list:
             return JSONResponse(status_code=400,
                                 content={"msg": "비정상적인 접근입니다."})
@@ -113,6 +115,32 @@ async def create_post(request: Request,
             post_body=reg_info.post_body,
             post_id=Posts.filter().order_by("-user_id").first().post_id)
 
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
+#게시물 수정
+@router.put("/post")
+async def update_post(request: Request, update_info: m.PostUpdate):
+    try:
+        user = request.state.user
+        Posts.filter(user_id=user.user_id, post_id=update_info.post_id).update(
+            auto_commit=True, **update_info.dict(exclude={"post_body"}))
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
+#게시물 삭제
+@router.delete("/post/{post_id}")
+async def delete_post(request: Request, post_id: int):
+    try:
+        user = request.state.user
+        Posts.filter(user_id=user.user_id,
+                     post_id=post_id).delete(auto_commit=True)
     except Exception as e:
         request.state.inspect = frame()
         raise e

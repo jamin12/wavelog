@@ -46,19 +46,25 @@ async def about(request: Request, user_name: str):
     return me
 
 
+#게시판
 @router.get("/contents/{user_id}/{category_id}",
             response_model=List[m.contents],
             response_model_exclude_unset=True)
 async def contents(request: Request, user_id: int, category_id: int):
+    """
+    TODO 카테고리를 매번 불러와야하나?? 
+    """
+
     try:
-        post = Posts.filter(user_id=user_id)._q
-        category = Categories.filter(user_id=user_id)._q
-        a = post.outerjoin(Categories,
-                           Posts.user_id == Categories.user_id).all()
-        print(a[0].categoty_name)
-        return a
-        # if category_id == 0:
-        #     Posts.filter(user_id=user_id).all()
+        if category_id == 0:
+            post = Posts.filter(user_id=user_id).all()
+            category = Categories.filter(user_id=user_id).all()
+            response = post + category
+            return response
+        post = Posts.filter(user_id=user_id, category_id=category_id).all()
+        category = Categories.filter(user_id=user_id).all()
+        response = post + category
+        return response
     except Exception as e:
         request.state.inspect = frame()
         raise e

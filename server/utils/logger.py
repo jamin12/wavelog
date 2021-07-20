@@ -33,7 +33,7 @@ async def api_logger(request: Request, response=None, error=None):
 
     user_log = dict(
         client=request.state.ip,
-        user=user.id if user and user.id else None,
+        user=user.user_id if user and user.user_id else None,
     )
 
     log_dict = dict(

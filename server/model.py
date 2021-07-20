@@ -69,9 +69,18 @@ class PostRegister(BaseModel):
     category_id: int = None
 
 
-class contents(BaseModel):
-    category_id: int = None
+#게시물 수정
+class PostUpdate(BaseModel):
     post_id: int = None
+    post_title: str = None
+    post_body: str = None
+    category_id: int = None
+
+
+#컨텐츠 페이지
+class contents(BaseModel):
+    post_id: int = None
+    category_id: int = None
     category_name: str = None
     category_color: str = None
     post_title: str = None
