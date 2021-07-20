@@ -89,6 +89,13 @@ class contents(BaseModel):
         orm_mode = True
 
 
+class GetPost(BaseModel):
+    post_title: str = None
+
+    class Config:
+        orm_mode = True
+
+
 #메시지 OK
 class MessageOk(BaseModel):
     message: str = Field(default="OK")

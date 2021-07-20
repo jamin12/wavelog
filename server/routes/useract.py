@@ -3,6 +3,7 @@ from os import path as op
 import re
 from sys import path as sp
 from sqlalchemy.sql.expression import update
+from sqlalchemy.sql.operators import exists
 
 from starlette.responses import JSONResponse
 
@@ -95,14 +96,12 @@ async def create_post(request: Request,
                       session: Session = Depends(db.session)):
     try:
         user = request.state.user
-        user_category_list = []
-        usercategorys = Categories.filter(user_id=user.user_id).all()
-        for usercategory in usercategorys:
-            user_category_list.append(usercategory.category_id)
         #잘못된 카테고리가 들어왔을 때
-        if reg_info.category_id not in user_category_list:
+        is_exist = await check_category_exist(user.user_id,
+                                              reg_info.category_id)
+        if not is_exist:
             return JSONResponse(status_code=400,
-                                content={"msg": "비정상적인 접근입니다."})
+                                content=dict(msg="잘못된 접근입니다."))
         Posts.create(
             session=session,
             auto_commit=True,
@@ -113,7 +112,7 @@ async def create_post(request: Request,
             session=session,
             auto_commit=True,
             post_body=reg_info.post_body,
-            post_id=Posts.filter().order_by("-user_id").first().post_id)
+            post_id=Posts.filter().order_by("-post_id").first().post_id)
 
     except Exception as e:
         request.state.inspect = frame()
@@ -122,12 +121,25 @@ async def create_post(request: Request,
 
 
 #게시물 수정
-@router.put("/post")
+@router.patch("/post")
 async def update_post(request: Request, update_info: m.PostUpdate):
     try:
         user = request.state.user
+        #잘못된 카테고리가 들어왔을 때
+        is_exist = await check_category_exist(user.user_id,
+                                              update_info.category_id)
+        if not is_exist:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="잘못된 접근입니다."))
         Posts.filter(user_id=user.user_id, post_id=update_info.post_id).update(
-            auto_commit=True, **update_info.dict(exclude={"post_body"}))
+            auto_commit=True,
+            **update_info.dict(
+                exclude={"post_body", "post_id"},
+                exclude_unset=True,
+            ))
+        PostBody.filter(post_id=update_info.post_id).update(
+            auto_commit=True, post_body=update_info.post_body)
+
     except Exception as e:
         request.state.inspect = frame()
         raise e
@@ -145,6 +157,17 @@ async def delete_post(request: Request, post_id: int):
         request.state.inspect = frame()
         raise e
     return m.MessageOk()
+
+
+#유저 카테고리 체크
+async def check_category_exist(user_id: int, category_id: int):
+    user_category_list = []
+    usercategorys = Categories.filter(user_id=user_id).all()
+    for usercategory in usercategorys:
+        user_category_list.append(usercategory.category_id)
+    if category_id not in user_category_list:
+        return False
+    return True
 
 
 """
