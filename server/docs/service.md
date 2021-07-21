@@ -1,13 +1,23 @@
 ##/service
+
     "state_code" = 200
+
     [
+
         {
+
             "id": 0,
+
             "user_name": "string",
+
             "email": "user@example.com",
+
             "phone_num": "string",
+
             "residence": "string"
+
         }
+
     ]
 
 ##/service/about/{user_name}
