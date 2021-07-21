@@ -1,7 +1,6 @@
 ##/service
 
     "state_code" = 200
-
     [
         {
             "id": 0,
