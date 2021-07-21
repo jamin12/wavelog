@@ -2,7 +2,7 @@ from enum import auto
 from os import path as op
 import re
 from sys import path as sp
-from sqlalchemy.sql.expression import update
+from sqlalchemy.sql.expression import null, update
 from sqlalchemy.sql.operators import exists
 
 from starlette.responses import JSONResponse
@@ -46,11 +46,13 @@ router = APIRouter(prefix="/useract")
 #     return m.MessageOk()
 
 
-#카테고리 생성
 @router.post("/category", status_code=201)
 async def create_category(request: Request,
                           reg_info: m.CategoryRegister,
                           session: Session = Depends(db.session)):
+    """
+    카테고리 생성
+    """
     try:
         user = request.state.user
         Categories.create(
@@ -65,10 +67,12 @@ async def create_category(request: Request,
     return m.MessageOk()
 
 
-#카테고리 수정
 @router.put("/category/{category_id}/{category_rename}")
 async def update_category(request: Request, category_id: int,
                           category_rename: str):
+    """
+    카테고리 수정
+    """
     try:
         Categories.filter(category_id=category_id).update(
             auto_commit=True, category_name=category_rename)
@@ -78,9 +82,11 @@ async def update_category(request: Request, category_id: int,
     return m.MessageOk()
 
 
-#카테고리 삭제
 @router.delete("/category/{category_id}")
 async def delete_category(request: Request, category_id: int):
+    """
+    카테고리 삭제
+    """
     try:
         Categories.filter(category_id=category_id).delete(auto_commit=True)
     except Exception as e:
@@ -89,11 +95,13 @@ async def delete_category(request: Request, category_id: int):
     return m.MessageOk()
 
 
-#게시물 생성
 @router.post("/post", status_code=201)
 async def create_post(request: Request,
                       reg_info: m.PostRegister,
                       session: Session = Depends(db.session)):
+    """
+    게시물 생성
+    """
     try:
         user = request.state.user
         #잘못된 카테고리가 들어왔을 때
@@ -120,17 +128,20 @@ async def create_post(request: Request,
     return m.MessageOk()
 
 
-#게시물 수정
 @router.patch("/post")
 async def update_post(request: Request, update_info: m.PostUpdate):
+    """
+    개시물 수정
+    """
     try:
         user = request.state.user
         #잘못된 카테고리가 들어왔을 때
-        is_exist = await check_category_exist(user.user_id,
-                                              update_info.category_id)
-        if not is_exist:
-            return JSONResponse(status_code=400,
-                                content=dict(msg="잘못된 접근입니다."))
+        if update_info.category_id is not None:
+            is_exist = await check_category_exist(user.user_id,
+                                                  update_info.category_id)
+            if not is_exist:
+                return JSONResponse(status_code=400,
+                                    content=dict(msg="잘못된 접근입니다."))
         Posts.filter(user_id=user.user_id, post_id=update_info.post_id).update(
             auto_commit=True,
             **update_info.dict(
@@ -139,16 +150,17 @@ async def update_post(request: Request, update_info: m.PostUpdate):
             ))
         PostBody.filter(post_id=update_info.post_id).update(
             auto_commit=True, post_body=update_info.post_body)
-
     except Exception as e:
         request.state.inspect = frame()
         raise e
     return m.MessageOk()
 
 
-#게시물 삭제
 @router.delete("/post/{post_id}")
 async def delete_post(request: Request, post_id: int):
+    """
+    게시물 삭제
+    """
     try:
         user = request.state.user
         Posts.filter(user_id=user.user_id,

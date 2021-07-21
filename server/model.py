@@ -1,6 +1,7 @@
 from pydantic import Field
 from pydantic.main import BaseModel
 from pydantic.networks import EmailStr
+from typing import Optional
 """
 TODO 
 orm_mode 이놈 뭐하는 친구인지 이해하기..... 
@@ -35,18 +36,6 @@ class Token(BaseModel):
 #유저 아우풋
 class UserToken(BaseModel):
     user_id: int = None
-    user_name: str = None
-    email: EmailStr = None
-    phone_num: str = None
-    residence: str = None
-
-    class Config:
-        orm_mode = True
-
-
-#유저 리스트 가져오기
-class GetUserList(BaseModel):
-    id: int = None
     user_name: str = None
     email: EmailStr = None
     phone_num: str = None
@@ -91,6 +80,7 @@ class contents(BaseModel):
 
 class GetPost(BaseModel):
     post_title: str = None
+    post_body: str = None
 
     class Config:
         orm_mode = True

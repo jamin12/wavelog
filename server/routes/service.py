@@ -1,7 +1,5 @@
 from os import path as op
 from sys import path as sp
-from pydantic.errors import JsonError
-from sqlalchemy.sql.functions import user
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -13,11 +11,12 @@ from inspect import currentframe as frame
 
 import model as m
 from database.schema import *
+from database.conn import db
 
 router = APIRouter()
 
 
-@router.get("/", response_model=List[m.GetUserList])
+@router.get("/", response_model=List[m.UserToken])
 async def splash(request: Request):
     """
     ELB 상태 체크용 API
@@ -56,15 +55,16 @@ async def contents(request: Request, user_id: int, category_id: int):
     TODO 카테고리를 매번 불러와야하나?? 
     """
     try:
+        if not await check_category_exist(user_id, category_id):
+            return JSONResponse(status_code=404,
+                                content=dict(msg="page not found"))
         if category_id == 0:
             post = Posts.filter(user_id=user_id).all()
             category = Categories.filter(user_id=user_id).all()
-            response = post + category
-            return response
+            return post + category
         post = Posts.filter(user_id=user_id, category_id=category_id).all()
         category = Categories.filter(user_id=user_id).all()
-        response = post + category
-        return response
+        return post + category
     except Exception as e:
         request.state.inspect = frame()
         raise e
@@ -78,7 +78,22 @@ async def get_post(request: Request, user_id: int, post_id: int):
             return JSONResponse(status_code=404,
                                 content=dict(msg="page not found"))
         post = Posts.get(user_id=user_id, post_id=post_id)
-        return post
+        post_body = PostBody.get(post_id=post_id)
+        return {
+            "post_title": post.post_title,
+            "post_body": post_body.post_body
+        }
     except Exception as e:
         request.state.inspect = frame()
         raise e
+
+
+#유저 카테고리 체크
+async def check_category_exist(user_id: int, category_id: int):
+    user_category_list = []
+    usercategorys = Categories.filter(user_id=user_id).all()
+    for usercategory in usercategorys:
+        user_category_list.append(usercategory.category_id)
+    if category_id not in user_category_list:
+        return False
+    return True

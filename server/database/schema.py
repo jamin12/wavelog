@@ -1,8 +1,5 @@
 from os import path as op
 from sys import path as sp
-from typing import Text
-
-from sqlalchemy.orm.relationships import foreign
 
 sp.append(op.dirname(op.dirname(__file__)))
 
@@ -15,7 +12,7 @@ from sqlalchemy import (
     ForeignKey,
     TEXT,
 )
-from sqlalchemy.orm import Session, backref, query, relationship
+from sqlalchemy.orm import Session, backref, relationship
 
 from database.conn import Base, db
 
@@ -264,7 +261,7 @@ class PostBody(Base, BaseMixin):
         primary_key=True,
         nullable=False,
     )
-    post_body = Column(TEXT(65535), nullable=True)
+    post_body = Column(TEXT, nullable=True)
 
     #관계 형성
     post = relationship("Posts", backref=backref("post_body", uselist=False))
