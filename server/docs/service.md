@@ -1,26 +1,18 @@
-##/service
+## /service
 
     "state_code" = 200
-
     [
-
         {
-
             "id": 0,
-
             "user_name": "string",
-
             "email": "user@example.com",
-
             "phone_num": "string",
-
             "residence": "string"
-
         }
-
     ]
 
-##/service/about/{user_name}
+## /service/about/{user_name}
+
     state code = 200
     {
         "user_id": 0,
@@ -30,7 +22,8 @@
         "residence": "string"
     }
 
-##/service/contents/{user_id}/{category_id}
+## /service/contents/{user_id}/{category_id}
+
     state code = 200
     [
         {
@@ -42,7 +35,8 @@
         }
     ]
 
-##service/getpost/{user_id}/{post_id}
+## service/getpost/{user_id}/{post_id}
+
     state code = 200
     {
         "post_title": "string",
