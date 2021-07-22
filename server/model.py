@@ -78,12 +78,21 @@ class contents(BaseModel):
         orm_mode = True
 
 
+#게시물 페이지
 class GetPost(BaseModel):
     post_title: str = None
     post_body: str = None
 
     class Config:
         orm_mode = True
+
+
+#댓글
+class CommentRegister(BaseModel):
+    post_id: int = None
+    nick_name: str = None
+    password: str = None
+    comment_body: str = None
 
 
 #메시지 OK

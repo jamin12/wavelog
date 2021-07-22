@@ -16,6 +16,7 @@ from starlette.responses import JSONResponse
 from utils.date_utils import D
 from utils.logger import api_logger
 from common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX, JWT_ALGORITHM, JWT_SECRET
+from common import config
 from errors import exceptions as ex
 from database.schema import db
 import model as m
@@ -47,25 +48,59 @@ async def access_control(request: Request, call_next):
         return response
 
     try:
-        if url.startswith('/favicon.ico'):
-            raise ex.SqlFailureEx()
-        if url.startswith('/api/useract'):
-            #토큰 체크
-            if "authorization" in headers.keys():
-                token_info = await token_decode(headers.get("Authorization"))
+        # if url.startswith('/favicon.ico'):
+        #     raise ex.SqlFailureEx()
+        if url.startswith('/blog'):
+            #get 파라미터
+            qs = str(request.query_params)
+            qs_list = qs.split("&")
+            session = next(db.session())
 
-                request.state.user = m.UserToken(**token_info)
-                # qs = str(request.query_params)
-                # qs_list = qs.split("&")
-                response = await call_next(request)
-                return response
+            #사용자 모드
+            if not config.conf().DEBUG:
+                #get 파라미터 분리
+                try:
+                    qs_dict = {
+                        qs_split.split("=")[0]: qs_split.split("=")[1]
+                        for qs_split in qs_list
+                    }
+                except Exception:
+                    raise ex.APIQueryStringEx()
 
+                #타임 스탬프 확인
+                qs_keys = qs_dict.keys()
+                if "timestamp" not in qs_keys:
+                    raise ex.APIQueryStringEx()
+
+                #요청 온 시간 확인
+                now_timestamp = int(D.datetime(diff=9).timestamp())
+                if now_timestamp - 10 > int(
+                        qs_dict["timestamp"]) or now_timestamp < int(
+                            qs_dict["timestamp"]):
+                    raise ex.APITimestampEx()
+
+            #개발자 모드
             else:
-                raise ex.NotAuthorized()
+                if url.startswith('/blog/useract'):
+                    #토큰 체크
+                    if "authorization" in headers.keys():
+                        token_info = await token_decode(
+                            headers.get("Authorization"))
+                        request.state.user = m.UserToken(**token_info)
+                        response = await call_next(request)
+                        return response
+                    else:
+                        raise ex.NotAuthorized()
 
-        if url.startswith('/service'):
+                if url.startswith('blog/service'):
+                    response = await call_next(request)
+                    return response
+        else:
             response = await call_next(request)
             return response
+
+        response = await call_next(request)
+        await api_logger(request=request, response=response)
     except Exception as e:
         error = await exception_handler(e)
         error_dict = dict(status=error.status_code,

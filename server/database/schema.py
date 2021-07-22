@@ -250,6 +250,14 @@ class Posts(Base, BaseMixin):
         nullable=False,
     )
 
+    #관계 형성
+    comment = relationship(
+        "Comment",
+        backref=backref("Posts"),
+        cascade="all,delete-orphan",
+        passive_deletes=True,
+    )
+
 
 class PostBody(Base, BaseMixin):
     #게시물 본문 테이블
@@ -265,3 +273,12 @@ class PostBody(Base, BaseMixin):
 
     #관계 형성
     post = relationship("Posts", backref=backref("post_body", uselist=False))
+
+
+class Comment(Base, BaseMixin):
+    __tablename__ = "Comment"
+    comment_id = Column(Integer, primary_key=True, nullable=False, index=True)
+    post_id = Column(Integer, ForeignKey("Posts.post_id", ondelete="CASCADE"))
+    nick_name = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
+    comment_body = Column(String(255), nullable=False)

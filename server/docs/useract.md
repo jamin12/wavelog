@@ -1,4 +1,4 @@
-## post /api/category
+## post /blog/useract/category
 
 >   ## input
     {
@@ -10,7 +10,7 @@
     state code 201
         "string"
 
-## put /category/{categoty_id}/{category_rename}
+## put /blog/useract/category/{categoty_id}/{category_rename}
 
 >   ## input
     category_id : int
@@ -20,7 +20,7 @@
     state code 200
         "string"
 
-## delete /category/{category_id}
+## delete /blog/useract/category/{category_id}
 
 >   ## input
     category_id : int
@@ -29,7 +29,7 @@
     state code 200
         "string"
 
-## post /post
+## post /blog/useract/post
 
 >   ## input
     {
@@ -38,10 +38,11 @@
         "category_id": 0
     }
 
+>   ## output
     state code 200
         "string"
 
-## patch /post
+## patch /blog/useract/post
 
 >   ## input
     {
@@ -55,7 +56,7 @@
     state code 200
         "string"
 
-## delete /post/post_id
+## delete /blog/useract/post/post_id
 
 >   ## input
     post_id : int

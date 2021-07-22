@@ -1,4 +1,4 @@
-## get /service
+## get /blog/service
 
     "state_code" = 200
     [
@@ -11,7 +11,7 @@
         }
     ]
 
-## get /service/about/{user_name}
+## get /blog/service/about/{user_name}
 
     state code = 200
     {
@@ -22,7 +22,7 @@
         "residence": "string"
     }
 
-## get /service/contents/{user_id}/{category_id}
+## get /blog/service/contents/{user_id}/{category_id}
 
     state code = 200
     [
@@ -35,7 +35,7 @@
         }
     ]
 
-## get /service/getpost/{user_id}/{post_id}
+## get /blog/service/getpost/{user_id}/{post_id}
 
     state code = 200
     {

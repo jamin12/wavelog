@@ -1,3 +1,4 @@
+from enum import auto
 from os import path as op
 from sys import path as sp
 
@@ -8,12 +9,14 @@ from starlette.requests import Request
 from fastapi import APIRouter
 from typing import List
 from inspect import currentframe as frame
+from fastapi.param_functions import Depends
+import bcrypt
 
 import model as m
 from database.schema import *
 from database.conn import db
 
-router = APIRouter()
+router = APIRouter(prefix="/service")
 
 
 @router.get("/", response_model=List[m.UserToken])
@@ -55,13 +58,13 @@ async def contents(request: Request, user_id: int, category_id: int):
     TODO 카테고리를 매번 불러와야하나?? 
     """
     try:
-        if not await check_category_exist(user_id, category_id):
-            return JSONResponse(status_code=404,
-                                content=dict(msg="page not found"))
         if category_id == 0:
             post = Posts.filter(user_id=user_id).all()
             category = Categories.filter(user_id=user_id).all()
             return post + category
+        if not await check_category_exist(user_id, category_id):
+            return JSONResponse(status_code=404,
+                                content=dict(msg="page not found"))
         post = Posts.filter(user_id=user_id, category_id=category_id).all()
         category = Categories.filter(user_id=user_id).all()
         return post + category
@@ -86,6 +89,25 @@ async def get_post(request: Request, user_id: int, post_id: int):
     except Exception as e:
         request.state.inspect = frame()
         raise e
+
+
+@router.post("/comment")
+async def create_comment(request: Request,
+                         reg_info: m.CommentRegister,
+                         session: Session = Depends(db.session)):
+    try:
+        hash_pw = bcrypt.hashpw(reg_info.password.encode("utf-8"),
+                                bcrypt.gensalt())
+        Comment.create(
+            session=session,
+            auto_commit=True,
+            **reg_info.dict(exclude={"password"}),
+            password=hash_pw,
+        )
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
 
 
 #유저 카테고리 체크

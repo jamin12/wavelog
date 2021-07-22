@@ -51,11 +51,11 @@ def create_app():
                        allowed_hosts=conf().TRUSTED_HOSTS,
                        except_path=["/health"])
     # 라우터 정의
-    app.include_router(service.router, tags=["service"], prefix="/service")
-    app.include_router(auth.router, tags=["Authentication"], prefix="/api")
+    app.include_router(service.router, tags=["service"], prefix="/blog")
+    app.include_router(auth.router, tags=["Authentication"], prefix="/blog")
     app.include_router(useract.router,
                        tags=["UserAct"],
-                       prefix="/api",
+                       prefix="/blog",
                        dependencies=[Depends(API_KEY_HEADER)])
     return app
 
