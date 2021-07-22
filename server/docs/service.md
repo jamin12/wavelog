@@ -1,4 +1,4 @@
-## /service
+## get /service
 
     "state_code" = 200
     [
@@ -11,7 +11,7 @@
         }
     ]
 
-## /service/about/{user_name}
+## get /service/about/{user_name}
 
     state code = 200
     {
@@ -22,7 +22,7 @@
         "residence": "string"
     }
 
-## /service/contents/{user_id}/{category_id}
+## get /service/contents/{user_id}/{category_id}
 
     state code = 200
     [
@@ -35,7 +35,7 @@
         }
     ]
 
-## service/getpost/{user_id}/{post_id}
+## get /service/getpost/{user_id}/{post_id}
 
     state code = 200
     {
