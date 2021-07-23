@@ -1,7 +1,7 @@
 from pydantic import Field
 from pydantic.main import BaseModel
 from pydantic.networks import EmailStr
-from typing import Optional
+from typing import Dict, List, Optional
 """
 TODO 
 orm_mode 이놈 뭐하는 친구인지 이해하기..... 
@@ -82,6 +82,7 @@ class contents(BaseModel):
 class GetPost(BaseModel):
     post_title: str = None
     post_body: str = None
+    comment: List[str] = None
 
     class Config:
         orm_mode = True

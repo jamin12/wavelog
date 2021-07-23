@@ -41,4 +41,21 @@
     {
         "post_title": "string",
         "post_body": "string"
+        "comment": [
+            "string"
+        ]
     }
+
+## post /blog/service/commnet
+
+>   ## input
+    {
+        "post_id": 0,
+        "nick_name": "string",
+        "password": "string",
+        "comment_body": "string"
+    }
+
+>   ## output
+    state code = 201
+    "string"

@@ -77,24 +77,32 @@ async def contents(request: Request, user_id: int, category_id: int):
 @router.get("/getpost/{user_id}/{post_id}", response_model=m.GetPost)
 async def get_post(request: Request, user_id: int, post_id: int):
     try:
+        comment_body = []
         if Posts.filter(post_id=post_id).first() is None:
             return JSONResponse(status_code=404,
                                 content=dict(msg="page not found"))
         post = Posts.get(user_id=user_id, post_id=post_id)
         post_body = PostBody.get(post_id=post_id)
+        comments = Comment.filter(post_id=post_id).all()
+        for comment in comments:
+            comment_body.append(comment.comment_body)
         return {
             "post_title": post.post_title,
-            "post_body": post_body.post_body
+            "post_body": post_body.post_body,
+            "comment": comment_body
         }
     except Exception as e:
         request.state.inspect = frame()
         raise e
 
 
-@router.post("/comment")
+@router.post("/comment", status_code=201)
 async def create_comment(request: Request,
                          reg_info: m.CommentRegister,
                          session: Session = Depends(db.session)):
+    """
+    댓글 달기
+    """
     try:
         hash_pw = bcrypt.hashpw(reg_info.password.encode("utf-8"),
                                 bcrypt.gensalt())

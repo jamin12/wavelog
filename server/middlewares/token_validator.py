@@ -78,6 +78,21 @@ async def access_control(request: Request, call_next):
                         qs_dict["timestamp"]) or now_timestamp < int(
                             qs_dict["timestamp"]):
                     raise ex.APITimestampEx()
+                #일반 사용자
+                if url.startswith("/blog/service"):
+                    response = await call_next(request)
+                    return response
+                #블로그 개발자 전용
+                if url.startswith('/blog/useract'):
+                    #토큰 체크
+                    if "authorization" in headers.keys():
+                        token_info = await token_decode(
+                            headers.get("Authorization"))
+                        request.state.user = m.UserToken(**token_info)
+                        response = await call_next(request)
+                        return response
+                    else:
+                        raise ex.NotAuthorized()
 
             #개발자 모드
             else:
@@ -92,13 +107,12 @@ async def access_control(request: Request, call_next):
                     else:
                         raise ex.NotAuthorized()
 
-                if url.startswith('blog/service'):
+                if url.startswith('/blog/service'):
                     response = await call_next(request)
                     return response
         else:
             response = await call_next(request)
             return response
-
         response = await call_next(request)
         await api_logger(request=request, response=response)
     except Exception as e:
