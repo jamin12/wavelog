@@ -10,3 +10,4 @@ jwt >= 1.2.0
 pyjwt >= 2.1.0
 pillow >= 8.2.0
 requests >= 2.26.0
+pytest >= 6.2.4

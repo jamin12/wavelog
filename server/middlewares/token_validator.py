@@ -78,10 +78,12 @@ async def access_control(request: Request, call_next):
                         qs_dict["timestamp"]) or now_timestamp < int(
                             qs_dict["timestamp"]):
                     raise ex.APITimestampEx()
+
                 #일반 사용자
                 if url.startswith("/blog/service"):
                     response = await call_next(request)
                     return response
+
                 #블로그 개발자 전용
                 if url.startswith('/blog/useract'):
                     #토큰 체크

@@ -48,3 +48,4 @@ app.*.map.json
 #python virtual environment
 /.venv/
 **/__pycache__/
+**/.pytest_cache
