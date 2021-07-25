@@ -49,24 +49,36 @@ class MainScreen extends PageClass {
 
   /// 메인 스크린 위젯 설정
   Widget screenWidget(BuildContext context, Size size, MAIN_WIDGET widget) {
+    late Widget screenWidget;
+
     switch (widget) {
       case MAIN_WIDGET.MAIN:
         return MainWidget();
       case MAIN_WIDGET.ABOUT:
-        return AboutWidget();
+        screenWidget = AboutWidget();
+        break;
       case MAIN_WIDGET.DETAIL:
-        return DetailWidget();
+        screenWidget = DetailWidget();
+        break;
       case MAIN_WIDGET.CONTENTS:
-        return ContentsWidget(
+        screenWidget = ContentsWidget(
           tempCategory: _tempCategory,
           tempPost: _tempPost,
           itemClickListener: (int index) {
             changeView(context, size, changeView: MAIN_WIDGET.DETAIL);
           },
         );
+        break;
       default:
         return MainWidget();
     }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      physics: BouncingScrollPhysics(),
+      child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 80.0), child: screenWidget),
+    );
   }
 
   void changeView(BuildContext context, Size size,
@@ -95,16 +107,9 @@ class MainScreen extends PageClass {
                 top: 0,
                 bottom: 0,
                 width: size.width / 6 * 3,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  physics: BouncingScrollPhysics(),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 80.0),
-                    child: Consumer<MainWidgetNotifier>(
-                      builder: (context, value, child) =>
-                          screenWidget(context, size, value.mainWidget),
-                    ),
-                  ),
+                child: Consumer<MainWidgetNotifier>(
+                  builder: (context, value, child) =>
+                      screenWidget(context, size, value.mainWidget),
                 ),
               ),
               _buildWave(context),
@@ -367,31 +372,30 @@ class MainWidget extends StatefulWidget {
 }
 
 class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
-  ScrollController _controller = ScrollController();
-  int speedFactor = 20;
+  late ScrollController _scrollController;
+  late int speedFactor;
 
   @override
   void initState() {
-    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-      print('빌드 끝?');
-      _scroll();
+    _scrollController = ScrollController();
+    speedFactor = 50;
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _autoScroll();
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _scroll() {
-    double maxScrollExtent = _controller.position.maxScrollExtent;
-    print(maxScrollExtent);
-    double distanceDifferent = maxScrollExtent - _controller.offset;
+  void _autoScroll() {
+    double maxScrollExtent = _scrollController.position.maxScrollExtent;
+    double distanceDifferent = maxScrollExtent - _scrollController.offset;
     double durationDouble = distanceDifferent / speedFactor;
-
-    _controller.animateTo(_controller.position.maxScrollExtent,
+    _scrollController.animateTo(maxScrollExtent,
         duration: Duration(seconds: durationDouble.toInt()),
         curve: Curves.linear);
   }
@@ -399,61 +403,65 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      controller: _controller,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 50.0),
-          Text(
-            'Wavelog',
-            style: TextStyle(
-              fontSize: 80.0,
-              color: COLOR_BLACK,
-              fontWeight: FontWeight.bold,
+      physics: NeverScrollableScrollPhysics(),
+      controller: _scrollController,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 80.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 50.0),
+            Text(
+              'Wavelog',
+              style: TextStyle(
+                fontSize: 80.0,
+                color: COLOR_BLACK,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          SizedBox(height: 30.0),
-          Text(
-            'Developers',
-            style: TextStyle(
-                fontSize: 40.0,
-                color: COLOR_BLACK,
-                fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 15.0),
-          Text(
-            '(Font-End)Kwon Tae Woong',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: COLOR_BLACK,
-                fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10.0),
-          Text(
-            'Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: COLOR_BLACK,
-                fontWeight: FontWeight.normal),
-          ),
-          SizedBox(height: 10.0),
-          Text(
-            '(Back-End)Kang Kyung Min',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: COLOR_BLACK,
-                fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10.0),
-          Text(
-            'Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 ',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: COLOR_BLACK,
-                fontWeight: FontWeight.normal),
-          ),
-        ],
+            SizedBox(height: 30.0),
+            Text(
+              'Developers',
+              style: TextStyle(
+                  fontSize: 40.0,
+                  color: COLOR_BLACK,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 15.0),
+            Text(
+              '(Font-End)Kwon Tae Woong',
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: COLOR_BLACK,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발 Font-End 개발',
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: COLOR_BLACK,
+                  fontWeight: FontWeight.normal),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              '(Back-End)Kang Kyung Min',
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: COLOR_BLACK,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10.0),
+            Text(
+              'Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 Back-End 개발 ',
+              style: TextStyle(
+                  fontSize: 20.0,
+                  color: COLOR_BLACK,
+                  fontWeight: FontWeight.normal),
+            ),
+          ],
+        ),
       ),
     );
   }
