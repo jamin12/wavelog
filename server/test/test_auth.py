@@ -1,4 +1,9 @@
+import json
+import logging
+from fastapi.logger import logger
 from database.schema import Users
+
+logger.setLevel(logging.INFO)
 
 
 def test_user_registration(client, session):
@@ -11,7 +16,8 @@ def test_user_registration(client, session):
     user = dict(user_name="test1", password="123")
     res = client.post("/blog/auth/register", json=user)
     res_body = res.json()
-    print(res_body)
+    a = dict(res_body=res_body)
+    logger.info(json.dumps(a))
     assert res.status_code == 201
 
 

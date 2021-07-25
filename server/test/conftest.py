@@ -34,9 +34,11 @@ def client(app):
 def session():
     sess = next(db.session())
     yield sess
-    clear_all_table_data(session=sess,
-                         metadata=Base.metadata,
-                         except_tables=[])
+    clear_all_table_data(
+        session=sess,
+        metadata=Base.metadata,
+        except_tables=[],
+    )
     sess.rollback()
 
 
@@ -53,6 +55,7 @@ def login(session):
     session.commit()
     access_token = create_access_token(
         data=UserToken.from_orm(db_user).dict(exclude={'password'}), )
+    print(Users.filter().all())
     return dict(Authorization=f"Bearer {access_token}")
 
 
