@@ -6,6 +6,7 @@ sp.append(op.dirname(op.dirname(__file__)))
 
 from typing import List
 
+import bcrypt
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -15,6 +16,7 @@ from main import create_app
 from database.conn import db, Base
 from model import UserToken
 from routes.auth import create_access_token
+from utils.logger import t_api_logger
 
 
 @pytest.fixture(scope="session")
@@ -30,7 +32,7 @@ def client(app):
     return TestClient(app=app)
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 def session():
     sess = next(db.session())
     yield sess
@@ -49,13 +51,11 @@ def login(session):
     :param session:
     :return:
     """
-    db_user = Users.create(session=session,
-                           user_name="ryan_test",
-                           password="123")
+    hash_pw = bcrypt.hashpw("qwer1234".encode("utf-8"), bcrypt.gensalt())
+    db_user = Users.create(session=session, user_name="test", password=hash_pw)
     session.commit()
     access_token = create_access_token(
         data=UserToken.from_orm(db_user).dict(exclude={'password'}), )
-    print(Users.filter().all())
     return dict(Authorization=f"Bearer {access_token}")
 
 

@@ -49,6 +49,7 @@ class TestConfig(Config):
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
     TEST_MODE = True
+    DEBUG = True
 
 
 def conf():

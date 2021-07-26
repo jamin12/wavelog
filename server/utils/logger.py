@@ -49,3 +49,8 @@ async def api_logger(request: Request, response=None, error=None):
         logger.error(json.dumps(log_dict))
     else:
         logger.info(json.dumps(log_dict))
+
+
+def t_api_logger(response=None, **kwrgs):
+    res = dict(res_body=response, **kwrgs)
+    logger.info(json.dumps(res))
