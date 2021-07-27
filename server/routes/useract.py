@@ -63,14 +63,20 @@ async def create_category(request: Request,
     return m.MessageOk()
 
 
-@router.put("/category/{category_id}/{category_rename}")
-async def update_category(request: Request, category_id: int,
+@router.put("/category/{user_id}/{category_id}/{category_rename}")
+async def update_category(request: Request, user_id: int, category_id: int,
                           category_rename: str):
     """
     카테고리 수정
     """
+    ##TODO 토큰이랑 다른 유저 아이디가 들어왔을떄 오류 내야함
     try:
-        Categories.filter(category_id=category_id).update(
+        #잘못된 카테고리가 들어왔을 때
+        is_exist = await check_category_exist(user_id, category_id)
+        if not is_exist:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="잘못된 접근입니다."))
+        Categories.filter(user_id=user_id, category_id=category_id).update(
             auto_commit=True, category_name=category_rename)
     except Exception as e:
         request.state.inspect = frame()
@@ -78,13 +84,19 @@ async def update_category(request: Request, category_id: int,
     return m.MessageOk()
 
 
-@router.delete("/category/{category_id}")
-async def delete_category(request: Request, category_id: int):
+@router.delete("/category/{user_id}/{category_id}")
+async def delete_category(request: Request, user_id: int, category_id: int):
     """
     카테고리 삭제
     """
     try:
-        Categories.filter(category_id=category_id).delete(auto_commit=True)
+        #잘못된 카테고리가 들어왔을 때
+        is_exist = await check_category_exist(user_id, category_id)
+        if not is_exist:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="잘못된 접근입니다."))
+        Categories.filter(user_id=user_id,
+                          category_id=category_id).delete(auto_commit=True)
     except Exception as e:
         request.state.inspect = frame()
         raise e

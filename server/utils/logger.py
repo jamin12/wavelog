@@ -51,6 +51,14 @@ async def api_logger(request: Request, response=None, error=None):
         logger.info(json.dumps(log_dict))
 
 
-def t_api_logger(response=None, **kwrgs):
-    res = dict(res_body=response, **kwrgs)
-    logger.info(json.dumps(res))
+def t_api_logger(response=None, url=None, **kwrgs):
+    time_format = "%Y/%m/%d %H:%M:%S"
+    log_dict = dict(
+        url=url,
+        statusCode=response.status_code,
+        res_body=response.json(),
+        datetimeKST=(datetime.utcnow() +
+                     timedelta(hours=9)).strftime(time_format),
+        **kwrgs,
+    )
+    logger.info(json.dumps(log_dict))

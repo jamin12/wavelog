@@ -58,7 +58,7 @@ class SQLAlchemy:
             if db_url.host != "localhost":
                 raise Exception(
                     "db host must be 'localhost' in test environment")
-            except_schema_db_url = f"{db_url.drivername}://{db_url.username}@{db_url.host}"
+            except_schema_db_url = f"{db_url.drivername}://{db_url.username}:1234@{db_url.host}"
             schema_name = db_url.database
             temp_engine = create_engine(except_schema_db_url,
                                         echo=echo,

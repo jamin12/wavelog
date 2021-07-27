@@ -1,5 +1,5 @@
 from os import path as op
-from sys import path as sp, prefix
+from sys import path as sp
 
 sp.append(op.dirname(__file__))
 
@@ -27,6 +27,7 @@ def create_app():
     """
     c = conf()
     app = FastAPI()
+    ## 타입 어노테이션을 지정해야 asdict에 데이터가 들어감...(신기)
     conf_dict = asdict(c)
     db.init_app(app, **conf_dict)
 

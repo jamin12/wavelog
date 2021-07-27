@@ -6,9 +6,6 @@ from typing import Dict, List, Optional
 TODO 
 orm_mode 이놈 뭐하는 친구인지 이해하기..... 
 저번에는 이해한거 같았는데 아닌갑네 또 모르겠어
-TODO
-erd 모델 바뀐후 model 변경 안함.......하.....
-열심히 바꿔야지
 """
 
 
