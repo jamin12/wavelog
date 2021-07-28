@@ -69,8 +69,12 @@ async def update_category(request: Request, user_id: int, category_id: int,
     """
     카테고리 수정
     """
-    ##TODO 토큰이랑 다른 유저 아이디가 들어왔을떄 오류 내야함
     try:
+        user = request.state.user
+        #다른 유저 아이디가 들어왔을 때
+        if user_id != user.user_id:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="잘못된 접근입니다."))
         #잘못된 카테고리가 들어왔을 때
         is_exist = await check_category_exist(user_id, category_id)
         if not is_exist:
@@ -90,6 +94,11 @@ async def delete_category(request: Request, user_id: int, category_id: int):
     카테고리 삭제
     """
     try:
+        #다른 유저 아이디가 들어왔을 때
+        user = request.state.user
+        if user_id != user.user_id:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="잘못된 접근입니다."))
         #잘못된 카테고리가 들어왔을 때
         is_exist = await check_category_exist(user_id, category_id)
         if not is_exist:

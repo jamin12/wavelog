@@ -5,9 +5,6 @@ from utils.logger import t_api_logger
 def test_user_registration(client, session):
     """
     "유저 생성"
-    :param client:
-    :param session:
-    :return:
     """
     url = "/blog/auth/register"
     user = dict(user_name="test1", password="123")
@@ -20,9 +17,6 @@ def test_user_registration(client, session):
 def test_user_registration_check_param(client, session):
     """
     "유저 생성 필수 데이터 체크"
-    :param client:
-    :param session:
-    :return:
     """
     url = "/blog/auth/register"
     user = dict(user_name="test1")
@@ -36,9 +30,6 @@ def test_user_registration_check_param(client, session):
 def test_user_registration_exist_user(client, session):
     """
     "유저 생성, 이미 있는 유저 체크"
-    :param client:
-    :param session:
-    :return:
     """
     url = "/blog/auth/register"
     user = dict(user_name="test1", password="123")
@@ -54,8 +45,6 @@ def test_user_registration_exist_user(client, session):
 def test_user_login(client, login):
     """
     "로그인"
-    :param client:
-    :param login:
     """
     url = "/blog/auth/login"
     logins = dict(user_name="test", password="qwer1234")
@@ -70,8 +59,6 @@ def test_user_login(client, login):
 def test_user_login_check_param(client, login):
     """
     "로그인, 필수 데이터 체크"
-    :param client:
-    :param login:
     """
     url = "/blog/auth/login"
     logins = dict(user_name="test")
@@ -85,8 +72,6 @@ def test_user_login_check_param(client, login):
 def test_user_login_match_user(client, login):
     """
     "로그인, 유저 유무 체크"
-    :param client:
-    :param login:
     """
     url = "/blog/auth/login"
     logins = dict(user_name="test1", password="qwer1234")
@@ -100,8 +85,6 @@ def test_user_login_match_user(client, login):
 def test_user_login_faild_password(client, login):
     """
     "로그인, 비밀번호 틀림 체크"
-    :param client:
-    :param login:
     """
     url = "/blog/auth/login"
     logins = dict(user_name="test", password="qwer123q4q")

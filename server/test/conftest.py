@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from database.schema import Users, Categories, Posts
+from database.schema import Users, Categories, Posts, PostBody
 from main import create_app
 from database.conn import db, Base
 from model import UserToken
@@ -63,13 +63,32 @@ def login(session):
 def category(session):
     """
     테스트전 카테고리 미리 등록
-    :param login:
+    :param session:
     """
     user = Users.get(user_name="test")
     Categories.create(session=session,
                       user_id=user.user_id,
                       category_name="test_category")
     session.commit()
+
+
+@pytest.fixture(scope="function")
+def post(session):
+    """
+    테스트전 게시물 미리 등록
+    """
+    user = Users.get(user_name="test")
+    category = Categories.get(category_name="test_category")
+    Posts.create(session=session,
+                 auto_commit=True,
+                 user_id=user.user_id,
+                 post_title="test_title",
+                 category_id=category.category_id)
+    PostBody.create(
+        session=session,
+        auto_commit=True,
+        post_body="test_body",
+        post_id=Posts.filter().order_by("-post_id").first().post_id)
 
 
 def clear_all_table_data(session: Session,
