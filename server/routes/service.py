@@ -117,8 +117,34 @@ async def create_comment(request: Request,
     return m.MessageOk()
 
 
-#유저 카테고리 체크
+@router.delete("/comment/{comment_id}/{password}")
+async def delete_comment(request: Request, comment_id: int, password: str):
+    """
+    댓글 삭제
+    """
+    try:
+        comment_info = Comment.get(comment_id=comment_id)
+        is_verified = bcrypt.checkpw(password.encode("utf-8"),
+                                     comment_info.password.encode("utf-8"))
+        #비밀 번호가 틀렸을 때
+        if not is_verified:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="please check password"))
+        else:
+            Comment.filter(comment_id=comment_id).delete(auto_commit=True)
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
 async def check_category_exist(user_id: int, category_id: int):
+    """
+    유저 카테고리 체크
+    :param user_id : int :
+    :param category_id : int :
+    :return bool:
+    """
     user_category_list = []
     usercategorys = Categories.filter(user_id=user_id).all()
     for usercategory in usercategorys:

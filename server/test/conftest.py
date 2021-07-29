@@ -11,12 +11,11 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from database.schema import Users, Categories, Posts, PostBody
+from database.schema import Users, Categories, Posts, PostBody, Comment
 from main import create_app
 from database.conn import db, Base
 from model import UserToken
 from routes.auth import create_access_token
-from utils.logger import t_api_logger
 
 
 @pytest.fixture(scope="session")
@@ -59,6 +58,12 @@ def login(session):
     return dict(Authorization=f"Bearer {access_token}")
 
 
+"""
+TODO 아니 이거 계속 세션 받아오고 해야하나??
+상위개체 받아오고 사용할수 없남/.
+"""
+
+
 @pytest.fixture(scope="function")
 def category(session):
     """
@@ -89,6 +94,26 @@ def post(session):
         auto_commit=True,
         post_body="test_body",
         post_id=Posts.filter().order_by("-post_id").first().post_id)
+
+
+@pytest.fixture(scope="function")
+def comment(session):
+    """
+    테스트전 댓글 미리 등록
+    """
+    hash_pw = bcrypt.hashpw("qwer1234".encode("utf-8"), bcrypt.gensalt())
+    post = Posts.get(post_id=1)
+    Comment.create(session=session,
+                   post_id=post.post_id,
+                   nick_name="test_nick_name",
+                   password=hash_pw,
+                   comment_body="test_comment_body")
+    Comment.create(session=session,
+                   post_id=post.post_id,
+                   nick_name="test_nick_name2",
+                   password=hash_pw,
+                   comment_body="test_comment_body2")
+    session.commit()
 
 
 def clear_all_table_data(session: Session,

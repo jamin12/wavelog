@@ -272,7 +272,7 @@ class PostBody(Base, BaseMixin):
     post_body = Column(TEXT, nullable=True)
 
     #관계 형성
-    post = relationship("Posts", backref=backref("post_body", uselist=False))
+    post = relationship("Posts", backref=backref("postbody", uselist=False))
 
 
 class Comment(Base, BaseMixin):
