@@ -3,7 +3,6 @@ import logging
 from datetime import timedelta, datetime
 from time import time
 from fastapi.requests import Request
-from fastapi import Body
 from fastapi.logger import logger
 
 logger.setLevel(logging.INFO)
@@ -33,7 +32,7 @@ async def api_logger(request: Request, response=None, error=None):
 
     user_log = dict(
         client=request.state.ip,
-        user=user.id if user and user.id else None,
+        user=user.user_id if user and user.user_id else None,
     )
 
     log_dict = dict(
@@ -50,3 +49,16 @@ async def api_logger(request: Request, response=None, error=None):
         logger.error(json.dumps(log_dict))
     else:
         logger.info(json.dumps(log_dict))
+
+
+def t_api_logger(response=None, url=None, **kwrgs):
+    time_format = "%Y/%m/%d %H:%M:%S"
+    log_dict = dict(
+        url=url,
+        statusCode=response.status_code,
+        res_body=response.json(),
+        datetimeKST=(datetime.utcnow() +
+                     timedelta(hours=9)).strftime(time_format),
+        **kwrgs,
+    )
+    logger.info(json.dumps(log_dict))

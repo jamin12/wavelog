@@ -7,14 +7,17 @@ from dataclasses import asdict
 
 import uvicorn
 from fastapi import FastAPI, Depends
+from fastapi.security import APIKeyHeader
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from common.config import conf
 from database.conn import db, Base
-from routes import index, auth
+from routes import service, auth, useract
 from middlewares.trusted_hosts import TrustedHostMiddleware
 from middlewares.token_validator import access_control
+
+API_KEY_HEADER = APIKeyHeader(name="Authorization", auto_error=False)
 
 
 def create_app():
@@ -24,11 +27,16 @@ def create_app():
     """
     c = conf()
     app = FastAPI()
+    ## 타입 어노테이션을 지정해야 asdict에 데이터가 들어감...(신기)
     conf_dict = asdict(c)
     db.init_app(app, **conf_dict)
-    # 데이터 베이스 이니셜라이즈
 
-    # 레디스 이니셜라이즈
+    #테이블 생성
+    """
+    TODO 임시로 넣은것 더 효율적인 방법 찾아서 다른 곳에다가 넣겠음ㅎ 
+    """
+    # Base.metadata.create_all(db.engine)
+    # Base.metadata.drop_all(db.engine)
 
     # 미들웨어 정의
     app.add_middleware(middleware_class=BaseHTTPMiddleware,
@@ -44,8 +52,12 @@ def create_app():
                        allowed_hosts=conf().TRUSTED_HOSTS,
                        except_path=["/health"])
     # 라우터 정의
-    app.include_router(index.router)
-    app.include_router(auth.router, tags=["Authentication"], prefix="/api")
+    app.include_router(service.router, tags=["service"], prefix="/blog")
+    app.include_router(auth.router, tags=["Authentication"], prefix="/blog")
+    app.include_router(useract.router,
+                       tags=["UserAct"],
+                       prefix="/blog",
+                       dependencies=[Depends(API_KEY_HEADER)])
     return app
 
 

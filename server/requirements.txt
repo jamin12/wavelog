@@ -7,3 +7,7 @@ nanodb >= 0.4.3
 pymysql >= 1.0.2
 bcrypt >= 3.2.0
 jwt >= 1.2.0
+pyjwt >= 2.1.0
+pillow >= 8.2.0
+requests >= 2.26.0
+pytest >= 6.2.4

@@ -9,18 +9,15 @@ from sqlalchemy import (
     String,
     DateTime,
     func,
-    Enum,
-    Boolean,
     ForeignKey,
+    TEXT,
 )
-from sqlalchemy.orm import Session, relationship
-from sqlalchemy.sql.expression import false, null
+from sqlalchemy.orm import Session, backref, relationship
 
 from database.conn import Base, db
 
 
 class BaseMixin:
-    id = Column(Integer, primary_key=True, index=True)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
     updated_at = Column(DateTime,
                         nullable=False,
@@ -35,7 +32,7 @@ class BaseMixin:
     def all_columns(self):
         return [
             c for c in self.__table__.columns
-            if c.primary_key is False and c.name != "created_at"
+            if c.name != "id" and c.name != "created_at"
         ]
 
     def __hash__(self):
@@ -74,7 +71,6 @@ class BaseMixin:
         for key, val in kwargs.items():
             col = getattr(cls, key)
             query = query.filter(col == val)
-
         if query.count() > 1:
             raise Exception(
                 "Only one row is supposed to be returned, but got more than one."
@@ -95,15 +91,28 @@ class BaseMixin:
         cond = []
         for key, val in kwargs.items():
             key = key.split("__")
+
             if len(key) > 2:
                 raise Exception("No 2 more dunders")
             col = getattr(cls, key[0])
-            if len(key) == 1: cond.append((col == val))
-            elif len(key) == 2 and key[1] == 'gt': cond.append((col > val))
-            elif len(key) == 2 and key[1] == 'gte': cond.append((col >= val))
-            elif len(key) == 2 and key[1] == 'lt': cond.append((col < val))
-            elif len(key) == 2 and key[1] == 'lte': cond.append((col <= val))
-            elif len(key) == 2 and key[1] == 'in': cond.append((col.in_(val)))
+            if len(key) == 1:
+                cond.append((col == val))
+                #gt : 보다 큰 조건
+            elif len(key) == 2 and key[1] == 'gt':
+                cond.append((col > val))
+                #gte : 보다 크거나 같은 조건
+            elif len(key) == 2 and key[1] == 'gte':
+                cond.append((col >= val))
+                #lt : 보다 작은 조건
+            elif len(key) == 2 and key[1] == 'lt':
+                cond.append((col < val))
+                #lte : 보다 작거나 같은 조건
+            elif len(key) == 2 and key[1] == 'lte':
+                cond.append((col <= val))
+                #in : [1,2,3]등등 조건
+            elif len(key) == 2 and key[1] == 'in':
+                cond.append((col.in_(val)))
+            #예시 user.filter(id__gt = 3)
         obj = cls()
         if session:
             obj._session = session
@@ -139,7 +148,8 @@ class BaseMixin:
 
     def update(self, auto_commit: bool = False, **kwargs):
         qs = self._q.update(kwargs)
-        get_id = self.id
+        #이거 용도 뭐징?
+        # get_id = self.id
         ret = None
 
         self._session.flush()
@@ -177,28 +187,98 @@ class BaseMixin:
 
 
 class Users(Base, BaseMixin):
+    # 유저 테이블
     __tablename__ = "Users"
-    user_name = Column(String(40), nullable=False)
-    password = Column(String(200), nullable=False)
+    user_id = Column(Integer, primary_key=True, index=True)
+    user_name = Column(String(40), nullable=False, unique=True)
+    password = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=True)
+    phone_num = Column(String(50), nullable=True)
+    residence = Column(String(255), nullable=True)
+
+    #관계 형성
+    user_category = relationship(
+        "Categories",
+        backref=backref("users"),
+        cascade="all, delete-orphan, save-update",
+        passive_deletes=True,
+    )
+    user_post = relationship(
+        "Posts",
+        backref=backref("user"),
+        cascade="all, delete-orphan, save-update",
+        passive_deletes=True,
+    )
 
 
-# class UsersCatagory(Base, BaseMixin):
-#     __tablename__ = "UsersCatagory"
-#     user_id = Column(String(40),
-#                      ForeignKey("Users.user_id"),
-#                      nullable=False,
-#                      primary_key=True)
-#     catagory_name = Column(String(100), nullable=False)
+class Categories(Base, BaseMixin):
+    __tablename__ = "Categories"
+    #카테고리 테이블
+    category_id = Column(Integer, primary_key=True, index=True)
+    category_name = Column(String(200), nullable=False)
+    category_color = Column(String(45), nullable=True, default="red")
+    user_id = Column(
+        Integer,
+        ForeignKey("Users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
 
-# class Posts(Base, BaseMixin):
-#     __tablename__ = "Posts"
-#     post_title = Column(String(100), nullable=False)
-#     post_body = Column(String(), nullable=False)
+    #관계 형성
+    posts = relationship(
+        "Posts",
+        backref=backref("categories"),
+        cascade="all, delete-orphan, save-update",
+        passive_deletes=True,
+    )
 
-# class UsersPosts(Base, BaseMixin):
-#     __tablename__ = "UsersPosts"
-#     user_id = Column(String(40), ForeignKey("Users.user_id"), primary_key=True)
-#     catagory_id = Column(Integer,
-#                          ForeignKey("UsersCatagory.id"),
-#                          primary_key=True)
-#     posts_id = Column(Integer, ForeignKey("Posts.id"), primary_key=True)
+
+class Posts(Base, BaseMixin):
+    #게시물 테이블
+    __tablename__ = "Posts"
+    post_id = Column(Integer, primary_key=True, index=True)
+    post_title = Column(String(255), nullable=True)
+    category_id = Column(
+        Integer,
+        ForeignKey("Categories.category_id",
+                   ondelete="CASCADE",
+                   onupdate="CASCADE"),
+        nullable=False,
+    )
+    user_id = Column(
+        Integer,
+        ForeignKey("Users.user_id", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False,
+    )
+
+    #관계 형성
+    comment = relationship(
+        "Comment",
+        backref=backref("Posts"),
+        cascade="all,delete-orphan",
+        passive_deletes=True,
+    )
+
+
+class PostBody(Base, BaseMixin):
+    #게시물 본문 테이블
+    __tablename__ = "PostBody"
+    id = None
+    post_id = Column(
+        Integer,
+        ForeignKey("Posts.post_id", ondelete="CASCADE", onupdate="CASCADE"),
+        primary_key=True,
+        nullable=False,
+    )
+    post_body = Column(TEXT, nullable=True)
+
+    #관계 형성
+    post = relationship("Posts", backref=backref("postbody", uselist=False))
+
+
+class Comment(Base, BaseMixin):
+    __tablename__ = "Comment"
+    comment_id = Column(Integer, primary_key=True, nullable=False, index=True)
+    post_id = Column(Integer, ForeignKey("Posts.post_id", ondelete="CASCADE"))
+    nick_name = Column(String(255), nullable=False)
+    password = Column(String(255), nullable=False)
+    comment_body = Column(String(255), nullable=False)
