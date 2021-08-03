@@ -75,6 +75,9 @@ async def contents(request: Request, user_id: int, category_id: int):
 #게시물
 @router.get("/getpost/{user_id}/{post_id}", response_model=m.GetPost)
 async def get_post(request: Request, user_id: int, post_id: int):
+    """
+    게시물 불러오기
+    """
     try:
         comment_body = []
         if Posts.filter(post_id=post_id).first() is None:
@@ -111,6 +114,28 @@ async def create_comment(request: Request,
             **reg_info.dict(exclude={"password"}),
             password=hash_pw,
         )
+    except Exception as e:
+        request.state.inspect = frame()
+        raise e
+    return m.MessageOk()
+
+
+@router.patch("/comment/{comment_id}/{password}/{change_comment}")
+async def update_comment(request: Request, comment_id: int, password: str,
+                         change_comment: str):
+    """
+    댓글 수정
+    """
+    try:
+        comment_info = Comment.get(comment_id=comment_id)
+        is_verified = bcrypt.checkpw(password.encode("utf-8"),
+                                     comment_info.password.encode("utf-8"))
+        if not is_verified:
+            return JSONResponse(status_code=400,
+                                content=dict(msg="please check password"))
+        else:
+            Comment.filter(comment_id=comment_id).update(
+                auto_commit=True, comment_body=change_comment)
     except Exception as e:
         request.state.inspect = frame()
         raise e

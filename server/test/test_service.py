@@ -4,6 +4,9 @@ from model import UserToken, contents
 import bcrypt
 
 url_prefix = "/blog/service"
+"""
+TODO 왜 한번에 하면 안되고 따로따로 하면 되는 것인가......
+"""
 
 
 def test_about(client, login):
@@ -138,3 +141,16 @@ def test_comment_delete_check_password(client, login, category, post, comment):
     res = client.delete(url)
     t_api_logger(response=res, url=url)
     assert res.status_code == 400
+
+
+def test_comment_update(client, login, category, post, comment):
+    """
+    댓글 수정
+    """
+    comment_id = 1
+    password = "qwer1234"
+    change_comment = "test_change_comment"
+    url = url_prefix + f"/comment/{comment_id}/{password}/{change_comment}"
+    res = client.patch(url)
+    t_api_logger(response=res, url=url)
+    assert res.status_code == 200
