@@ -1,7 +1,7 @@
 from pydantic import Field
 from pydantic.main import BaseModel
 from pydantic.networks import EmailStr
-from typing import Dict, List, Optional
+from typing import List
 """
 TODO 
 orm_mode 이놈 뭐하는 친구인지 이해하기..... 

@@ -1,7 +1,6 @@
 from database.schema import Users, Categories, Posts, Comment, PostBody
 from utils.logger import t_api_logger
 from model import UserToken, contents
-import bcrypt
 
 url_prefix = "/blog/service"
 """
@@ -45,6 +44,7 @@ def test_contents(client, login, category, post):
     user_id = 1
     category_id = 1
     url = url_prefix + f"/contents/{user_id}/{category_id}"
+    client.get(url_prefix + "/1")
     res = client.get(url)
     t_api_logger(response=res,
                  url=url,
@@ -59,7 +59,7 @@ def test_contents(client, login, category, post):
 
 def test_contesnts_check_category(client, login, category):
     """
-    컨텐츠 페이지, 카테고리 없을 경우
+    컨텐츠 페이지, 카테고리 체크
     """
     user_id = 1
     category_id = 2
@@ -82,6 +82,7 @@ def test_get_post(client, login, category, post, comment):
     user_id = 1
     post_id = 1
     url = url_prefix + f"/getpost/{user_id}/{post_id}"
+
     res = client.get(url)
     t_api_logger(response=res, url=url)
     assert res.status_code == 200

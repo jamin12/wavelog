@@ -16,20 +16,22 @@ from database.schema import *
 from database.conn import db
 
 router = APIRouter(prefix="/service")
+category_list = []
 
 
-@router.get("/", response_model=List[m.UserToken])
-async def splash(request: Request):
+@router.get("/{user_id}")
+async def splash(request: Request, user_id: int):
     """
     ELB 상태 체크용 API
     :return:
     """
     try:
-        all_users = Users.filter().all()
+        global category_list
+        category_list = Categories.filter(user_id=user_id).all()
     except Exception as e:
         request.state.inspect = frame()
         raise e
-    return all_users
+    return m.MessageOk()
 
 
 @router.get('/about/{user_name}', response_model=m.UserToken)
@@ -54,19 +56,18 @@ async def about(request: Request, user_name: str):
             response_model_exclude_unset=True)
 async def contents(request: Request, user_id: int, category_id: int):
     """
-    TODO 카테고리를 매번 불러와야하나?? 
+    게시판 불러오기
     """
     try:
+        global category_list
         if category_id == 0:
             post = Posts.filter(user_id=user_id).all()
-            category = Categories.filter(user_id=user_id).all()
-            return post + category
+            return post + category_list
         if not await check_category_exist(user_id, category_id):
             return JSONResponse(status_code=404,
                                 content=dict(msg="page not found"))
         post = Posts.filter(user_id=user_id, category_id=category_id).all()
-        category = Categories.filter(user_id=user_id).all()
-        return post + category
+        return post + category_list
     except Exception as e:
         request.state.inspect = frame()
         raise e
