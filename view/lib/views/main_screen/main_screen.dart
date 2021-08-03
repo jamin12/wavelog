@@ -1,6 +1,7 @@
 import 'package:blog/const.dart';
 import 'package:blog/providers/main_widget_notifier.dart';
 import 'package:blog/providers/wave_notifier.dart';
+import 'package:blog/utils/http_utils.dart';
 import 'package:blog/views/common_components/layout/web_layout.dart';
 import 'package:blog/views/main_screen/widget/about_widget.dart';
 import 'package:blog/views/main_screen/widget/contents_widget.dart';
@@ -12,6 +13,8 @@ import 'package:blog/views/main_screen/widget/wave_widget.dart';
 import 'package:blog/views/page_class_wrapper/page_class.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 enum MAIN_WIDGET { MAIN, CONTENTS, ABOUT, DETAIL }
 
@@ -42,12 +45,16 @@ class MainScreen extends PageClass {
   @override
   void initSetting(BuildContext context) {
     _waveWidth = context.read<WaveNotifier>().waveWidth;
+    BlogHttp.get('', (code, body) => print(body));
   }
 
   @override
   Widget appScaffold(BuildContext context) {
-    return Scaffold(
-      body: Container(),
+    return WillPopScope(
+      onWillPop: null,
+      child: Scaffold(
+        body: Container(),
+      ),
     );
   }
 
