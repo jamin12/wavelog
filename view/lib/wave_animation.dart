@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:blog/const.dart';
 import 'package:flutter/material.dart';
 
+/// Wave Animation Widget
 class WaveAnimation extends StatefulWidget {
   final int waveSpeed;
   final bool reverse;
@@ -62,6 +63,7 @@ class _WaveAnimationState extends State<WaveAnimation>
   }
 }
 
+// Wave Animation 계산 처리
 class WaveClipper extends CustomClipper<Path> {
   final double animationValue;
 

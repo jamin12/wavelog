@@ -1,6 +1,7 @@
 import 'package:blog/const.dart';
 import 'package:blog/providers/main_widget_notifier.dart';
 import 'package:blog/providers/wave_notifier.dart';
+import 'package:blog/utils/comm_params.dart';
 import 'package:blog/utils/http_utils.dart';
 import 'package:blog/views/common_components/layout/web_layout.dart';
 import 'package:blog/views/main_screen/widget/about_widget.dart';
@@ -45,7 +46,17 @@ class MainScreen extends PageClass {
   @override
   void initSetting(BuildContext context) {
     _waveWidth = context.read<WaveNotifier>().waveWidth;
-    BlogHttp.get('', (code, body) => print(body));
+
+    var body = {
+      "user_name": "kmeoung2",
+      "password": "123456789",
+    };
+
+    BlogHttp.post(
+      CommParams.apiAuthLogin,
+      (code, body) => print(body),
+      body: jsonEncode(body),
+    );
   }
 
   @override
