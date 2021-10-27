@@ -46,6 +46,6 @@ app.*.map.json
 /android/app/release
 
 #python virtual environment
-/.venv/
+/server/venv/
 **/__pycache__/
 **/.pytest_cache
