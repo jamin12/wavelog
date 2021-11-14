@@ -21,7 +21,7 @@ class LocalConfig(Config):
     """
     개발 모드
     """
-    DB_URL: str = "mysql+pymysql://root:1234@localhost:3306/waveblog?charset=utf8mb4"
+    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/wavelog?charset=utf8mb4"
 
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
@@ -33,7 +33,7 @@ class ProdConfig(Config):
     """
     사용자 모드
     """
-    DB_URL: str = "mysql+pymysql://root:1234@localhost:3306/waveblog?charset=utf8mb4"
+    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/wavelog?charset=utf8mb4"
 
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
@@ -44,7 +44,7 @@ class TestConfig(Config):
     """
     테스트 모드
     """
-    DB_URL: str = "mysql+pymysql://root:1234@localhost:3306/testwaveblog?charset=utf8mb4"
+    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/testwavelog?charset=utf8mb4"
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
     TEST_MODE: bool = True

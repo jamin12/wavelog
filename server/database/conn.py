@@ -53,12 +53,13 @@ class SQLAlchemy:
         self._session = sessionmaker(autocommit=False,
                                      autoflush=False,
                                      bind=self._engine)
+        # 테스트 할때
         if is_testing:  # create schema
             db_url = self._engine.url
             if db_url.host != "localhost":
                 raise Exception(
                     "db host must be 'localhost' in test environment")
-            except_schema_db_url = f"{db_url.drivername}://{db_url.username}:1234@{db_url.host}"
+            except_schema_db_url = f"{db_url.drivername}://{db_url.username}:wzqxec951@{db_url.host}"
             schema_name = db_url.database
             temp_engine = create_engine(except_schema_db_url,
                                         echo=echo,
@@ -68,6 +69,7 @@ class SQLAlchemy:
                 _drop_database(temp_engine, schema_name)
             _create_database(temp_engine, schema_name)
             temp_engine.dispose()
+            
         self._session = sessionmaker(autocommit=False,
                                      autoflush=False,
                                      bind=self._engine)
