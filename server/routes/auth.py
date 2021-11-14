@@ -8,7 +8,7 @@ from fastapi.param_functions import Depends
 from sqlalchemy.orm.session import Session
 from starlette.responses import JSONResponse, Response
 
-from jwt.api_jwt import encode
+import jwt
 import bcrypt
 from datetime import datetime, timedelta
 
@@ -104,5 +104,5 @@ def create_access_token(*, data: dict = None, expires_delta: int = None):
     if expires_delta:
         to_encode.update(
             {"exp": datetime.utcnow() + timedelta(hours=expires_delta)})
-    encoded_jwt = encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt

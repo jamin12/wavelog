@@ -8,7 +8,7 @@ import jwt
 import re
 
 import sqlalchemy.exc
-from jwt.api_jwt import ExpiredSignatureError, DecodeError
+from jwt import ExpiredSignatureError, DecodeError
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
