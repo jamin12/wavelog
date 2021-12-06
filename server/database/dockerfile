@@ -7,6 +7,7 @@ ENV MARIADB_PASSWORD 1234
 ENV MARIADB_ROOT_PASSWORD qwer1234
 ENV MARIADB_DATABASE wavelog
 
+
 # 이미지 빌드 명령어
 # docker build -t {이미지명} .
 

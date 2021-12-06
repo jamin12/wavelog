@@ -8,11 +8,7 @@ import jwt
 import re
 
 import sqlalchemy.exc
-<<<<<<< HEAD
 from jwt import ExpiredSignatureError, DecodeError
-=======
-# from jwt.exceptions import ExpiredSignatureError, DecodeError
->>>>>>> bcb6719 (dockerfile testing.......)
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse

@@ -8,8 +8,11 @@ WORKDIR /usr/src/server/app
 # 이미지 만들떄 다운 받을것들
 RUN pip install -r requirements.txt
 
+# 포트 오픈
+EXPOSE 8080
 
-CMD [ "uvicorn","main:app","--host","0.0.0.0","--port","8080"]
+
+# CMD [ "uvicorn","main:app","--host","0.0.0.0","--port","8080"]
 
 
 # 이미지 생성 명령어 (현 파일과 같은 디렉토리에서)

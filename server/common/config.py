@@ -21,14 +21,9 @@ class LocalConfig(Config):
     """
     개발 모드
     """
-<<<<<<< HEAD
-    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/wavelog?charset=utf8mb4"
-=======
-    DB_URL: str = "mysql+pymysql://root:qwer1234@localhost:3306/wavelog?charset=utf8mb4"
->>>>>>> bcb6719 (dockerfile testing.......)
-
+    DB_URL: str = "mysql+pymysql://testuser:1234@192.168.0.46:3306/wavelog?charset=utf8mb4"
     TRUSTED_HOSTS = ["*"]
-    ALLOW_SITE = ["*"]
+    ALLOW_SITE = ["*"]  
     DEBUG = True
 
 
@@ -36,12 +31,8 @@ class LocalConfig(Config):
 class ProdConfig(Config):
     """
     사용자 모드
-    """
-<<<<<<< HEAD
-    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/wavelog?charset=utf8mb4"
-=======
-    DB_URL: str = "mysql+pymysql://root:qwer1234@localhost:3306/wavelog?charset=utf8mb4"
->>>>>>> bcb6719 (dockerfile testing.......)
+    """    
+    DB_URL: str = "mysql+pymysql://root:1234@%:3306/wavelog?charset=utf8mb4"
 
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
@@ -52,11 +43,8 @@ class TestConfig(Config):
     """
     테스트 모드
     """
-<<<<<<< HEAD
-    DB_URL: str = "mysql+pymysql://root:wzqxec951@localhost:3306/testwavelog?charset=utf8mb4"
-=======
-    DB_URL: str = "mysql+pymysql://root:qwer1234@localhost:3306/testwavelog?charset=utf8mb4"
->>>>>>> bcb6719 (dockerfile testing.......)
+    DB_URL: str = "mysql+pymysql://root:1234@%:3306/wavelog?charset=utf8mb4"
+
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
     TEST_MODE: bool = True
