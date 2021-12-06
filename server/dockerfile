@@ -1,0 +1,17 @@
+FROM python:3.8-buster
+
+# 이미지 내의 현위치로 잡을 디렉토리 설정
+WORKDIR /usr/src/server
+
+# server 디렉토리 복사
+COPY /. /usr/src/server
+
+
+ENV PYTHONPATH="/usr/src/server"
+
+
+# 이미지 생성 명령어 (현 파일과 같은 디렉토리에서)
+# docker build -t {이미지명} .
+
+# 컨테이너 생성 & 실행 명령어
+# docker run --name {컨테이너명} -it {이미지명}

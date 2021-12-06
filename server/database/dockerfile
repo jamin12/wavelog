@@ -1,0 +1,17 @@
+# 데이터 베이스 이미지
+FROM mariadb:10.7.1
+
+# 이미지 환경변수
+ENV MARIADB_USER testuser
+ENV MARIADB_PASSWORD 1234
+ENV MARIADB_ROOT_PASSWORD qwer1234
+ENV MARIADB_DATABASE wavelog
+
+# 이미지 빌드 명령어
+# docker build -t {이미지명} .
+
+# 실행 명령어 (터미널에 로그 찍히는 거 보기)
+# docker run --name {컨테이너 명} -it  -p 3306:3306 {이미지명}
+
+# 실행 명령어 (데몬으로 실행) 백그라운드
+# docker run --name {컨테이너 명} -p 3306:3306 -d {이미지명}

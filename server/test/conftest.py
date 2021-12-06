@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from database.schema import Users, Categories, Posts, PostBody, Comment
-from main import create_app
+from app.main import create_app
 from database.conn import db, Base
 from model import UserToken
 from routes.auth import create_access_token
