@@ -35,7 +35,7 @@ def create_app():
     """
     TODO 임시로 넣은것 더 효율적인 방법 찾아서 다른 곳에다가 넣겠음ㅎ 
     """
-    Base.metadata.create_all(db.engine)
+    # Base.metadata.create_all(db.engine)
     # Base.metadata.drop_all(db.engine)
 
     # 미들웨어 정의

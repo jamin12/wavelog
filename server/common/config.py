@@ -21,7 +21,7 @@ class LocalConfig(Config):
     """
     개발 모드
     """
-    DB_URL: str = "mysql+pymysql://testuser:1234@192.168.0.46:3306/wavelog?charset=utf8mb4"
+    DB_URL: str = "mysql+pymysql://testuser:1234@172.30.1.53:3306/wavelog"
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]  
     DEBUG = True
@@ -31,9 +31,8 @@ class LocalConfig(Config):
 class ProdConfig(Config):
     """
     사용자 모드
-    """    
+    """
     DB_URL: str = "mysql+pymysql://root:1234@%:3306/wavelog?charset=utf8mb4"
-
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
 
@@ -44,7 +43,6 @@ class TestConfig(Config):
     테스트 모드
     """
     DB_URL: str = "mysql+pymysql://root:1234@%:3306/wavelog?charset=utf8mb4"
-
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]
     TEST_MODE: bool = True

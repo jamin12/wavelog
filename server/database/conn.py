@@ -74,10 +74,10 @@ class SQLAlchemy:
                                      autoflush=False,
                                      bind=self._engine)
 
-        @app.on_event("startup")
-        def startup():
-            self._engine.connect()
-            logging.info("DB connected.")
+        # @app.on_event("startup")
+        # def startup():
+            # self._engine.connect()
+            # logging.info("DB connected.")
 
         @app.on_event("shutdown")
         def shutdown():

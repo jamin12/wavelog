@@ -1,5 +1,16 @@
 version: '3'
 services:
+  # backend file
+  backend:
+    build: .
+    # 연결할 외부 디렉토리 : 컨테이너 내 디렉토리
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/jamin/server
+    command: uvicorn main:app --reload --host=0.0.0.0 --port=8080 
+    depends_on:
+      - database
   #database
   database:
   # dockerfile이 있는 위치
@@ -7,13 +18,4 @@ services:
   # 내부에서 개방할 포트 : 외부에서 접근할 포트
     ports:
       - "3306:3306"
-    # volumes:
-    #   - /..:/usr/src/server
-  # backend file
-  backend:
-    build: ./app
-    # 연결할 외부 디렉토리 : 컨테이너 내 디렉토리
-    ports:
-      - "8080:8080"
-
 
