@@ -1,9 +1,13 @@
 from dataclasses import dataclass
 from os import path, environ
+import socket
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
-
-
+ipaddr = list(socket.gethostbyname(socket.gethostname()))
+while True:
+    if ipaddr[-1] == '.':
+        break
+    ipaddr.pop()
 @dataclass
 class Config:
     """
@@ -21,7 +25,8 @@ class LocalConfig(Config):
     """
     개발 모드
     """
-    DB_URL: str = "mysql+pymysql://testuser:1234@172.30.1.53:3306/wavelog"
+    DB_URL: str = f"mysql+pymysql://testuser:1234@172.20.0.15:3306/wavelog"
+    
     TRUSTED_HOSTS = ["*"]
     ALLOW_SITE = ["*"]  
     DEBUG = True
